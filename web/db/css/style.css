@@ -1,0 +1,18 @@
+#xf-logo {
+    background-image: url(../img/clinicdb.png);
+    height: 50px;
+}
+
+/* Hide the control panel */
+#control_panel { display: none; }
+
+#my_menu { margin-top: 10px; margin-left: 200px; font-weight: bold;  }
+
+.listing .even {
+    /*every second line should be shaded */
+    background-color: transparent;
+}
+
+body {
+    font-family: "Lato", Helvetica, Arial, sans-serif;
+}

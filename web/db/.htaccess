@@ -1,0 +1,7 @@
+Options +ExecCGI -Indexes
+
+<FilesMatch "\.ini$">
+  Deny from all
+</FilesMatch>
+
+
