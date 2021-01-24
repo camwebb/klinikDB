@@ -1,0 +1,12 @@
+Options -Indexes
+
+ErrorDocument 404 "Page Not Found"
+
+#<FilesMatch "^\.pw$">
+#  Deny from all
+#</FilesMatch>
+
+#AuthType Basic
+#AuthName "Password Protected"
+#AuthUserFile /home/nwoodx/clinicDB/web/.pw
+#Require valid-user

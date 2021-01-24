@@ -12,7 +12,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `userName` (`UserName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN');
+INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN'),(2,'medical','CHANGEME','MEDICAL'),(3,'pharmacy','CHANGEME','PHARMACY');
 
 DROP TABLE IF EXISTS `antenatal`;
 
@@ -174,7 +174,8 @@ DROP TABLE IF EXISTS `drugStock`;
 CREATE TABLE `drugStock` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `packageID` int(11) NOT NULL,
-  `transType` enum('used up','new supply','correction') COLLATE utf8_bin NOT NULL,
+  -- `transType` enum('used up','new supply','correction') COLLATE utf8_bin NOT NULL,
+  `correction` tinyint(1) NOT NULL DEFAULT 0,
   `number` int(11) NOT NULL,
   `transDate` date NOT NULL,
   `costRp` int(11) DEFAULT NULL,
@@ -189,7 +190,7 @@ CREATE TABLE `drugStock` (
     REFERENCES `drugPackage` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `drugStock` VALUES (1,1037,'new supply',3,'2021-01-22',NULL,NULL,NULL);
+INSERT INTO `drugStock` VALUES (1,1037,0,3,'2021-01-22',NULL,NULL,NULL);
 
 DROP TABLE IF EXISTS `drugSuppl`;
 

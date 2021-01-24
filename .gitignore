@@ -2,3 +2,5 @@ web/cgi/pass.awk
 web/db/xataface/*
 web/db/templates_c/*
 web/db/conf.ini
+web/.htaccess
+web/.pw
