@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+  <title>Overview</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="description" content="Small clinic database"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="//fonts.googleapis.com/css?family=Lato:400,300,600" rel="stylesheet" type="text/css"/> <!-- originally Raleway -->
+  <link rel="stylesheet" href="../css/normalize.css"/>
+  <link rel="stylesheet" href="../css/skeleton.css"/>
+  <link rel="stylesheet" href="../css/override.css"/>
+  <link rel="icon" type="image/png" href="../img/favicon.ico"/>
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="nine columns" style="margin-top: 5%">
+<h1 id="history-and-overview">History and Overview</h1>
+<p>KlinikDB was developed to meet the needs of a rural medical clinic (<a href="https://www.alamsehatlestari.org">ASRI</a>) in Indonesia. When the clinic first opened (in 2007) all medical records were collected on paper, but as the number of patients grew, it became harder to:</p>
+<ol type="1">
+<li>Find the record for a returning patient,</li>
+<li>Keep track of patient payments for services, and patient debt, and</li>
+<li>Generate statistics for government reporting and fundraising.</li>
+</ol>
+<p>The first two tables of the database were ‘patients’ and ‘patient events’. The patient table holds basic data (name, DOB, phone number, village). Each patient event has a single type (e.g., doctor visit, dentist visit, nurse wound cleaning, medication, cash payment) and is associated with a price. Several events may take place in a single day (e.g., consultation, procedure, medication and payment). The database view of a patient shows any outstanding debt.</p>
+<p>We soon discovered we should not expect patients to hold onto a registration card with their accession number. However, we found that a combination of name, village, mother’s name, father’s name was almost always sufficient to locate a patient in the database. At ASRI we also store a photo of the patient in the database for confirmation, but this is generally not referred to.</p>
+<p>Soon other patient-related tables were added: diagnoses (using the WHO’s <a href="https://en.wikipedia.org/wiki/ICD-10">ICD10</a> codes), antenatal visit data, lab results.</p>
+<p>Managing medications is a major task for a small clinic: keeping key drugs in stock, and keeping track of expiration dates. We soon added a drugs subsystem to the database, which also permitted drug prescriptions to be linked to patient records. The drugs subsystem is organized around three tables: the drug unit (e.g., acetylsalicylic acid tablet of 100 mg), its drug package (e.g., a bottle of 500 such tablets), and a stock flow of these packages (bought, used up).</p>
+<p>Because the original ASRI clinic was also part of a forest conservation program, we also added conservation tables to the database (illegal activities in each village, reports from village conservation staff, seedling species arriving as patient payments). These were integrated with the patient table and village tables.</p>
+<p>Throughout the development of KlinikDB, we would often look into commercial hospital software options in Indonesia, and at free systems (such as <a href="https://openmrs.org/">OpenMRS</a> and <a href="https://www.open-emr.org/">OpenEMR</a>). While these products can be more sophisticated and easier to use, none met the needs or our idiosyncratic program as well as our ‘roll-your-own’ solution, and ASRI is still using KlinikDB after 13 years.</p>
+<h2 id="software-history">Software history</h2>
+<p>The first ASRI database was a single OpenOffice Base file. Since OpenOffice Base was built on the Java database HSQLDB, it was easy to switch the same database into server mode, with OpenOffice Base acting as a client on clinic laptops. Finally a move was made to a MySQL database, accessed via a web browser. This made access easier (no special client software, and ability to run CGI scripts for reporting, etc.).</p>
+      </div>
+      <div class="three columns" style="margin-top: 5%">
+        <a class="button" style="width:100%"
+           href="../">Home</a><br/>
+        <a class="button" style="width:100%"
+           href="../db/">Database</a><br/>
+        <a class="button" style="width:100%"
+           href="../pages/">Documentation</a><br/>
+        <img style="width:90%;padding-left:5%;padding-top:10%;" src="../img/asri.jpg" alt="menu picture"/>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

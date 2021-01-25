@@ -5,11 +5,9 @@
 # Free/Open Source Software using BSD 2-clause license
 # Requires gawk v4. See http://www.gnu.org/software/gawk/
 
-@include "pass.awk"
-
 BEGIN{
   
-  pass()
+  config()
   
   # READ QUERY STRING
   split(ENVIRON["QUERY_STRING"], query, "&");
@@ -552,3 +550,22 @@ function printip() {
       print "<b>" gensub(/\/.*/,"","G",$2) "</b>"
   htmlFooter()
 }
+
+function config() {
+  while ((getline < "../db/conf.ini") > 0) {
+    x = gensub(/^[^"]+"([^"]+)".*$/,"\\1","G",$0)
+    if ($0 ~ /^[[:blank:]]*host[[:blank:]]*=/)
+      HOST = x
+    if ($0 ~ /^[[:blank:]]*user[[:blank:]]*=/)
+      USER = x
+    if ($0 ~ /^[[:blank:]]*password[[:blank:]]*=/)
+      PASS = x
+    if ($0 ~ /^[[:blank:]]*name[[:blank:]]*=/)
+      DB = x
+  }
+  if (!HOST || !USER || !PASS || !DB) {
+    print "DB configuration failed" > "/dev/stderr"
+    exit 1
+  }
+}
+        

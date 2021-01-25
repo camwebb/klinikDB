@@ -1,21 +1,20 @@
-% ClinicDB Documentation
+% KlinikDB Documentation
 
-# ClinicDB Documentation
+# KlinikDB Documentation
 
 ## Background
 
- * Overview
- * Data collection [workflow](workflow.html), including
-   recommendations for paper-based medical records
-   
+ * [History and overview](overview.html)
+ * Data collection [workflow](workflow.html)
+
 ## Using the system
 
- * Data entry and management in the database
- * Reporting
+ * [User roles](roles.html): admin, medical, pharmacy
+ * [Data entry and management](entry.html) in the database
+ * [Reporting](reporting.html)
  
-## Technical details, customization and further development
+## Technical details
 
- * Core technologies
- * Adding tables
- * Adding new reports
+ * Core [technologies](tech.html)
+ * [Customization](customization.html): adding tables and new reports
 

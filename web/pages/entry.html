@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+  <title>Data entry</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="description" content="Small clinic database"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="//fonts.googleapis.com/css?family=Lato:400,300,600" rel="stylesheet" type="text/css"/> <!-- originally Raleway -->
+  <link rel="stylesheet" href="../css/normalize.css"/>
+  <link rel="stylesheet" href="../css/skeleton.css"/>
+  <link rel="stylesheet" href="../css/override.css"/>
+  <link rel="icon" type="image/png" href="../img/favicon.ico"/>
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="nine columns" style="margin-top: 5%">
+<h1 id="data-entry">Data entry</h1>
+<ul>
+<li>Once per week, the data entry staff visits each clinic, and enters the new data in the database</li>
+<li>After each data entry session, make a <a
+           href="cgi/run">backup</a>. Copy the backup file to Flashdrive 1. This file (ending in <tt>.sql.gz.asc</tt>) is encrypted. Only Yudi and Cam have the keys to decrypt it. Therefore, the data on the flashdrive cannot be read if the flashdrive is lost or stolen.</li>
+<li>After each data entry session, also copy the new patient CSV file to the clinic computer, and open in Excel.</li>
+<li>Once a month, copy the latest backup to Flashdrive 2. Keep Flashdrive 2 somewhere different than Flashdrive 1.</li>
+</ul>
+<h2 id="pharmacy">Pharmacy</h2>
+<ul>
+<li>For each generic kind of drug ("Obat"), there can be many distribution formats (tablets of different size, syrups of different concentration, etc.: "Satuan").</li>
+<li>These formats can be prescribed for each patient ("Kasih obat" in the patient view), with a number of units and a frequency of consumption per day.</li>
+<li>For managing pharmacy stock: each of these "satuan" arrives in the pharmacy in some package (box, bottle, tin: "susunan") than contains some number of "satuan".</li>
+<li>This "susunan" is the object that is tracked: When a package is emptied in the pharmacy, place it in a special location. On a regular basis, count the empty containers and add this information to the database ("susunan" -&gt; "stock" -&gt; "pakai").</li>
+<li>For each "susunan", you can enter a minimum number to keep in stock. If the total number falls below this minimum, the package will appear in the list of things to order, under the "Tools" menu.</li>
+<li>You can also keep track of the expiry date for medicines. Enter the <i>oldest</i> expiry date for any of the packages of a single type under the "susunan" form. Then under "Tools" you can generate a report that lists all the medicines with an oldest expiry date less that 6 months from the present. You can then review these and order newer medicines, or just discard the soon-to-expire medicines. Remember to update the "oldest expiry date" to reflect the new situation.</li>
+</ul>
+      </div>
+      <div class="three columns" style="margin-top: 5%">
+        <a class="button" style="width:100%"
+           href="../">Home</a><br/>
+        <a class="button" style="width:100%"
+           href="../db/">Database</a><br/>
+        <a class="button" style="width:100%"
+           href="../pages/">Documentation</a><br/>
+        <img style="width:90%;padding-left:5%;padding-top:10%;" src="../img/asri.jpg" alt="menu picture"/>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

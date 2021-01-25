@@ -1,20 +1,6 @@
-% Protocols
+% Data entry
 
-# Protocols
-
-## Hardcopy
-
-  * _Patient Receiving_ checks an up-to-date patient spreadsheet to
-    determine the Nomor Rekam Medis
-  * If a new patient: make new patient folder with new
-    number (1001-4999 for Klinik 1), (5001-9999 for Klinik 2)
-  * If a returning patient, give the folder to the patient,
-              or hand the patient a paper slip with their number (if
-              the patient's folder is at the other clinic).
-  * After the visit, make a stack of unentered new folders,
-              and doctor reports, and payment reports.
-
-## Data entry
+# Data entry
 
  * Once per week, the data entry staff visits each clinic,
               and enters the new data in the database

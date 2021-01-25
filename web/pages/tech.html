@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-  <title>KlinikDB Documentation</title>
+  <title>Core technologies</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <meta name="description" content="Small clinic database"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -18,23 +18,11 @@
   <div class="container">
     <div class="row">
       <div class="nine columns" style="margin-top: 5%">
-<h1 id="klinikdb-documentation">KlinikDB Documentation</h1>
-<h2 id="background">Background</h2>
-<ul>
-<li><a href="overview.html">History and overview</a></li>
-<li>Data collection <a href="workflow.html">workflow</a></li>
-</ul>
-<h2 id="using-the-system">Using the system</h2>
-<ul>
-<li><a href="roles.html">User roles</a>: admin, medical, pharmacy</li>
-<li><a href="entry.html">Data entry and management</a> in the database</li>
-<li><a href="reporting.html">Reporting</a></li>
-</ul>
-<h2 id="technical-details">Technical details</h2>
-<ul>
-<li>Core <a href="tech.html">technologies</a></li>
-<li><a href="customization.html">Customization</a>: adding tables and new reports</li>
-</ul>
+<h1 id="core-technologies">Core technologies</h1>
+<h2 id="database">Database</h2>
+<p>KlinikDB uses an insustry-standard ‘LAMP’ stack: Linux OS, Apache Webserver, MySQL (or MariaDB) database, PHP. On top of this stack, KlinikDB uses the <a href="http://xataface.com/">Xataface</a> framework, built by Steve Hannah. Xataface provides an easy way to view database tables, and can be run with either minimum configuration, or with great customization. KlinikDB has grown to use a wide range of the options in Xataface.</p>
+<h2 id="reporting-and-backup">Reporting and Backup</h2>
+<p>A single CGI, <a href="https://www.gnu.org/software/gawk/">Gawk</a> script (<code>cgi/do</code>) queries the database via <code>mysql-client</code> and formats the output as HTML or CSV. The script can also trigger a backup via <code>mysqldump</code>, which is then encrypted using <code>gpg</code> and can be safely copied to a flash drive.</p>
       </div>
       <div class="three columns" style="margin-top: 5%">
         <a class="button" style="width:100%"

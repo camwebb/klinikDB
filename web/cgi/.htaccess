@@ -4,8 +4,5 @@ Options +ExecCGI
   SetHandler cgi-script
 </Files>
 
-<Files pass.awk>
-  Deny from all
-</Files>
 
 
