@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-  <title>KlinikDB Documentation</title>
+  <title>Roles</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <meta name="description" content="Small clinic database"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -18,25 +18,14 @@
   <div class="container">
     <div class="row">
       <div class="nine columns" style="margin-top: 5%">
-<h1 id="klinikdb-documentation">KlinikDB Documentation</h1>
-<h2 id="background">Background</h2>
+<h1 id="roles-in-the-database">Roles in the database</h1>
+<p>In order to use KlinikDB, the operator must login in. Each login name has a ‘role’ which determines how much of the database can be seen and edited. These roles are set in the <code>Users</code> table. The roles are:</p>
 <ul>
-<li><a href="overview.html">History and overview</a></li>
-<li><a href="acknowledgments.html">Acknowledgments</a></li>
-<li><a href="workflow.html">Data collection workflow</a></li>
+<li><strong>ADMIN</strong>: Read and write access to all tables, including the ability to add and delete <code>Users</code>.</li>
+<li><strong>MEDICAL</strong>: Read and write access to all tables, except <code>Doctors</code>, <code>ICD10</code>, <code>Patient event type</code>, <code>Village</code> and <code>Users</code>. Physicians and data entry staff should be given this role. In order to add a new record to <code>Doctor</code> or <code>Village</code>, the data entry staff must ask a DB admin.</li>
+<li><strong>PHARMACY</strong>: Only read and write access to medication tables; no access to patient data.</li>
 </ul>
-<h2 id="using-the-system">Using the system</h2>
-<ul>
-<li><a href="roles.html">User roles</a>: admin, medical, pharmacy</li>
-<li><a href="usage.html">General use</a> of the database: views, new records, editing</li>
-<li>Patient and pharmacy <a href="entry.html">data entry and management</a></li>
-<li><a href="reporting.html">Reporting</a></li>
-</ul>
-<h2 id="technical-details">Technical details</h2>
-<ul>
-<li>Core <a href="tech.html">technologies</a></li>
-<li>Customization: adding tables and new reports</li>
-</ul>
+<p>Each user must be given their own login name and a random, 8-character password. These logins and passwords must now be shared with other users.</p>
       </div>
       <div class="three columns" style="margin-top: 5%">
         <a class="button" style="width:100%"

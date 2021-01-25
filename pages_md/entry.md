@@ -2,6 +2,7 @@
 
 # Data entry
 
+
  * Once per week, the data entry staff visits each clinic,
               and enters the new data in the database
  * After each data entry session, make a <a
@@ -46,3 +47,6 @@
               these and order newer medicines, or just discard the
               soon-to-expire medicines. Remember to update the "oldest
               expiry date" to reflect the new situation.
+
+
+

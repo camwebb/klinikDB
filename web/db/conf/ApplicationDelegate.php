@@ -20,8 +20,10 @@ class conf_ApplicationDelegate {
             // set access to tables
             //   http://xataface.com/forum/viewtopic.php?t=4445#21970
             if ($user->val('Role') == 'MEDICAL') {
-                // Remove tables from Menu (does not work to hide from
+                // Remove tables from NavMenu (does not work to hide from
                 //   standard menu, so need to make own menu) 
+                unset($app->_conf['_tables']['Users']);
+                unset($app->_conf['_tables']['dusun']);
                 // This role cannot access the tables from browser
                 $app->_conf['_disallowed_tables']['hide1'] = 'doc';
                 $app->_conf['_disallowed_tables']['hide2'] = 'Users';
@@ -41,6 +43,7 @@ class conf_ApplicationDelegate {
                 unset($app->_conf['_tables']['icd10']);
                 unset($app->_conf['_tables']['dusun']);
                 unset($app->_conf['_tables']['drugDispense']);
+                unset($app->_conf['_tables']['Users']);
                 // This role cannot access the tables from browser
                 $app->_conf['_disallowed_tables']['hide1'] = 'patient';
                 $app->_conf['_disallowed_tables']['hide2'] = 'visit';

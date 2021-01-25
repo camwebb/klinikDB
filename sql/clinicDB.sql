@@ -6,7 +6,7 @@ CREATE TABLE `Users` (
   `UserID` int(11) NOT NULL AUTO_INCREMENT,
   `UserName` varchar(32) COLLATE utf8_bin NOT NULL,
   `Password` varchar(32) COLLATE utf8_bin NOT NULL,
-  `Role` enum('ADMIN','MEDICAL','PHARMACY','CONSERVATION')
+  `Role` enum('ADMIN','MEDICAL','PHARMACY')
     COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `userName` (`UserName`)
