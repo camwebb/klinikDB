@@ -19,21 +19,41 @@
     <div class="row">
       <div class="nine columns" style="margin-top: 5%">
 <h1 id="data-entry">Data entry</h1>
+<p>After <a href="workflow.html">data collection</a>, data should be added to the database as often as possible, so as not to fall behind (the patient record folders become hard to find if many of them are in the ‘To Be Entered’ pile). See the <a href="usage.html">usage</a> document for general information about using the database.</p>
+<h2 id="patient-data">Patient data</h2>
 <ul>
-<li>Once per week, the data entry staff visits each clinic, and enters the new data in the database</li>
-<li>After each data entry session, make a <a
-           href="cgi/run">backup</a>. Copy the backup file to Flashdrive 1. This file (ending in <tt>.sql.gz.asc</tt>) is encrypted. Only Yudi and Cam have the keys to decrypt it. Therefore, the data on the flashdrive cannot be read if the flashdrive is lost or stolen.</li>
-<li>After each data entry session, also copy the new patient CSV file to the clinic computer, and open in Excel.</li>
-<li>Once a month, copy the latest backup to Flashdrive 2. Keep Flashdrive 2 somewhere different than Flashdrive 1.</li>
+<li>If the patient is new, create a new patient record with all data on the Basic Data form. If the patient is returning to to clinic, search for the patient’s record using the Patient Record Number (PRN) on the folder.</li>
+<li>Open the ‘Record view’ for the patient (by clicking on the patient’s PRN in the grid/table view).</li>
+<li>First add data for ‘Antenatal visits’, ‘Diagnoses’, and ‘Drug prescriptions’. Click the respective tab (to the right of ‘View’), and then ‘New ...’. Enter date, doctor, and other information. The red squares indicate that a field must be filled.</li>
+<li>Then the various patient events with costs. Click the ‘Events’ tab, and then ‘New Event’. Enter date, type of event, location, doctor, and price. Note that for most services, use a positive (+) value (greater than 0), but for payment, use a negative (-) value. Save, and click Cancel to return to the main patient record view. Make sure that all doctor consultations, labs, nurse actions, and drug purchases on the paper ‘Visit form’ have been entered in the Events table. Consult the separate (non-database) costs printout for prices. If a drug or service is being provided free, you <em>must still create an event</em>, but enter ‘0’ for the cost. This is vital for reporting purposes.</li>
+<li>If a new village, doctor, or event type is needed, you must ask someone with <a href="roles.html">‘admin’ level access</a> to the database to add it for you.</li>
 </ul>
-<h2 id="pharmacy">Pharmacy</h2>
+<h2 id="pharmacy-data">Pharmacy data</h2>
+<p><strong>Creating new units and packages</strong></p>
 <ul>
-<li>For each generic kind of drug ("Obat"), there can be many distribution formats (tablets of different size, syrups of different concentration, etc.: "Satuan").</li>
-<li>These formats can be prescribed for each patient ("Kasih obat" in the patient view), with a number of units and a frequency of consumption per day.</li>
-<li>For managing pharmacy stock: each of these "satuan" arrives in the pharmacy in some package (box, bottle, tin: "susunan") than contains some number of "satuan".</li>
-<li>This "susunan" is the object that is tracked: When a package is emptied in the pharmacy, place it in a special location. On a regular basis, count the empty containers and add this information to the database ("susunan" -&gt; "stock" -&gt; "pakai").</li>
-<li>For each "susunan", you can enter a minimum number to keep in stock. If the total number falls below this minimum, the package will appear in the list of things to order, under the "Tools" menu.</li>
-<li>You can also keep track of the expiry date for medicines. Enter the <i>oldest</i> expiry date for any of the packages of a single type under the "susunan" form. Then under "Tools" you can generate a report that lists all the medicines with an oldest expiry date less that 6 months from the present. You can then review these and order newer medicines, or just discard the soon-to-expire medicines. Remember to update the "oldest expiry date" to reflect the new situation.</li>
+<li>Either find, or create the generic drug name in the ‘Drug’ table. Click on the name to open the record view. Click the ‘Units’ tab.</li>
+<li>Add a new unit if needed.</li>
+<li>To add a new package, click on the ‘Open this record in the drug table’ link at the bottom and then the ‘Packaged as’ tab. Click ‘New packaged a’ button. Enter a new package. When adding a package, enter the ‘Minimum number to keep in stock’; this will permit you to know when you need to reorder this drug.</li>
+</ul>
+<p><strong>Stock management</strong></p>
+<p>During the course of a day in the pharmacy, put emptied packages in a large box. E.g., a box (the <em>package</em>) of 20 bottles of Acetaminophen syrup, 60 ml of concentration 160mg/5ml (the <em>unit</em>). Or: A bottles (<em>the package</em>) of 1000 tablets of aspirin, 100 mg (the <em>unit</em>). In rare cases, the whole dispensed unit is both a <em>unit</em> and a <em>package</em> (indicated by ‘individual’ in the ‘Packaging’ field), and a paper slip must be placed in the ‘Used’ box indicating that a package has been used. At the end of each day, the used packages must be entered into the database:</p>
+<ul>
+<li>Go to the ‘Drug packages’ table, and search for the generic or trade name. Find the correct package; <strong>note</strong> there may be several packages for the same drug unit, with different manufacturers and tradenames. Click on the trade name to enter the record view.</li>
+<li>Update the ‘Earliest date of expiration’ for all the packages on the shelf (this will require a physical visit to the drug closet).</li>
+<li>Click on the ‘Add/use’ tab, and then the ‘New Add/use’ button. Enter date and number: a negative number if the stock has been used.</li>
+<li>The new total will now be reflected in the ‘View’ tab for that package.</li>
+</ul>
+<p>When new stock arrives:</p>
+<ul>
+<li>Go to the ‘Drug packages’ table, and search for the generic or trade name. Find the correct package. Click on the trade name to enter the record view.</li>
+<li>If necessary, update the ‘Earliest date of expiration’ for all the packages on the shelf; usually this will not be necessary because new stock will generally have expiration dates further in the future than existing stock.</li>
+<li>Click on the ‘Add/use’ tab, and then the ‘New Add/use’ button. Enter date and number: a positive number for new stock. If desired, also enter a Batch code, a price, and the supplier. Add a new supplier if needed. Note the supplier is not the same as the manufacturer; the ‘supplier’ is the distributor company that you buy your drugs from.</li>
+<li>The new total will now be reflected in the ‘View’ tab for that package.</li>
+</ul>
+<p>Once every six months or so, you will need to do a stock-taking, to make sure the the physical stock matches the database. When the physical number in stock does not match the database:</p>
+<ul>
+<li>Find the package, as above.</li>
+<li>Click on the ‘Add/use’ tab, and then the ‘New Add/use’ button. Enter date and number, and click the ‘correction’ checkbox. For number, use a positive number when you have more physical stock than DB stock. Use a negative number when you have less physical stock than DB stock.</li>
 </ul>
       </div>
       <div class="three columns" style="margin-top: 5%">
@@ -43,6 +63,8 @@
            href="../db/">Database</a><br/>
         <a class="button" style="width:100%"
            href="../pages/">Documentation</a><br/>
+        <a class="button" style="width:100%"
+           href="../cgi/do">Tools</a><br/>
         <img style="width:90%;padding-left:5%;padding-top:10%;" src="../img/asri.jpg" alt="menu picture"/>
       </div>
     </div>

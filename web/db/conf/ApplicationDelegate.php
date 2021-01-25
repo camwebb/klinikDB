@@ -30,6 +30,11 @@ class conf_ApplicationDelegate {
                 $app->_conf['_disallowed_tables']['hide3'] = 'icd10';
                 $app->_conf['_disallowed_tables']['hide4'] = 'visitType';
                 $app->_conf['_disallowed_tables']['hide5'] = 'dusun';
+                // Add these to lock the pharmacy stock tables from docs/entry
+                unset($app->_conf['_tables']['drugPackage']);
+                unset($app->_conf['_tables']['drugSuppl']);
+                $app->_conf['_disallowed_tables']['drugPackage'] = 'dusun';
+                $app->_conf['_disallowed_tables']['drugSuppl'] = 'dusun';
                 // not working, always 'patient' from conf.ini
                 // $app->_conf['default_table'] = 'patient';
             }
