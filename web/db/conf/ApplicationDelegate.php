@@ -33,8 +33,8 @@ class conf_ApplicationDelegate {
                 // Add these to lock the pharmacy stock tables from docs/entry
                 unset($app->_conf['_tables']['drugPackage']);
                 unset($app->_conf['_tables']['drugSuppl']);
-                $app->_conf['_disallowed_tables']['drugPackage'] = 'dusun';
-                $app->_conf['_disallowed_tables']['drugSuppl'] = 'dusun';
+                $app->_conf['_disallowed_tables']['hide6'] = 'drugPackage';
+                $app->_conf['_disallowed_tables']['hide7'] = 'drugSuppl';
                 // not working, always 'patient' from conf.ini
                 // $app->_conf['default_table'] = 'patient';
             }
@@ -58,7 +58,10 @@ class conf_ApplicationDelegate {
                 $app->_conf['_disallowed_tables']['hide6'] = 'icd10';
                 $app->_conf['_disallowed_tables']['hide7'] = 'Users';
                 $app->_conf['_disallowed_tables']['hide8'] = 'dusun';
-                $app->_conf['_disallowed_tables']['hide8'] = 'drugDispense';
+                // Note: the following does not prevent access to
+                //  related_records. Some table-level delegate class permission
+                //  will be required.
+                $app->_conf['_disallowed_tables']['hide9'] = 'drugDispense';
                 // fix
                 if ($query['-table'] == 'patient')
                     $query['-table'] = 'drug';
