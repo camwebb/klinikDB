@@ -1,6 +1,6 @@
-% Liste de codes CIM-10
+% List of CIM-10 codes
 
-# Liste de codes CIM-10 (2008)
+# List of CIM-10 (2008) codes
 
 (Source: [WHO](https://icd.who.int/browse10/2008/fr))
 

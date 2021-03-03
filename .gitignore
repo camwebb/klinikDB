@@ -4,3 +4,5 @@ web/db/templates_c/*
 web/db/conf.ini
 web/.htaccess
 web/.pw
+DIARY.md
+passwords

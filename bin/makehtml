@@ -13,9 +13,24 @@ then
         sed -i 's|"../|"./|g' ../web/index.html
         # check
         tidy -e ../web/index.html 2>&1 >/dev/null | grep errors
+    elif [ $1 = "INDEX_fr.md" ]
+    then
+        echo "  "${1/md/html}
+        pandoc -s --template=template_fr.html -f markdown-smart \
+               -o ../web/index_fr.html $1
+        sed -i 's|"../|"./|g' ../web/index_fr.html
+        # check
+        tidy -e ../web/index_fr.html 2>&1 >/dev/null | grep errors
     else
         echo "  "${1/md/html}
-        pandoc -s --template=template.html -f markdown-smart \
+        LANG=`echo "$1" | sed -E 's/.*_([a-z][a-z])\..*/\1/g'`
+        if [ $LANG != "$1" ]
+        then
+            SUF=_$LANG
+        else
+            SUF=""
+        fi
+        pandoc -s --template=template${SUF}.html -f markdown-smart \
                -o ../web/pages/${1/md/html} $1
         # check
         tidy -e ../web/pages/${1/md/html} 2>&1 >/dev/null | grep errors
