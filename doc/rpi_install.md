@@ -198,6 +198,30 @@ the latest version.
 
 No try <http://localhost/db> and you should see the login screen.
 
+## Power monitoring
+
+Check for `raspberrypi_hwmon` module:
+
+    # lsmod | grep raspberrypi_hwmon
+
+    # pacman -S raspberrypi-firmware cronie
+    # 
+
+
+
+Since... batteries
+
+The sysfs approach is legacy and probably being dropped from newer
+kernels. The character device ABI, using /dev/gpiochip[0-9]+ (as
+discussed by @joan), is the new way to access GPIOs. On Arch, the
+gpio-utils package offers lsgpio, gpio-watch, gpio-hammer,
+gpio-event-mon as easy CLI tools for interacting with GPIO character
+devices.
+
+
+
+
+
 
 
 ## Issues
