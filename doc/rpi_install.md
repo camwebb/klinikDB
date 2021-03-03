@@ -3,7 +3,7 @@
 ## Installing the OS
 
 The LAMP stack behind KlinikDB could be installed on any OS. The
-Raspberry Pi is usually installed with Noobs or Raspian, Debian
+Raspberry Pi is usually installed with Noobs or Raspbian, Debian
 derivatives. However in the following Arch Linux is used, due to its
 smaller size, and the greater familiarity of the developer with Arch.
 The following details are for the installation of ArchLinuxARM on a
@@ -35,7 +35,7 @@ Raspberry Pi 4B (2021-03-02).
 **Finish basic setup**. In the following, a prompt of `#` means ‘as
 root’, and `$` means `as user (pi)`
     
-    # pacman -S emacs
+    # pacman -S emacs-nox
     # timedatectl set-timezone "Africa/Nairobi" # or yours
     # emacs /etc/locale.gen          # uncomment en_US.UTF-8 UTF-8
     # locale-gen
@@ -71,7 +71,7 @@ SSHing in may give trouble with terminal commands. Add `TERM=vt100` to
 
 Now install some core packages:
 
-    # pacman -S man emacs-nox rsync lynx mariadb git apache php7 php7-apache
+    # pacman -S man rsync lynx mariadb git apache php7 php7-apache
 
 Get klinikDB.
 
@@ -138,7 +138,7 @@ Save, and:
     # systemctl start httpd
     # systemctl enable httpd
     
-USe `journalctl` to chech that it started.
+Use `journalctl` to check that it started.
     
     $ chmod a+rx ../alarm/
 
@@ -200,29 +200,46 @@ No try <http://localhost/db> and you should see the login screen.
 
 ## Power monitoring
 
+Since the KlinikDB Raspberry Pi will be often powered by a battery
+powerpack, it is important to implement some code that triggers a safe
+shutdown when the input voltage drops below a threshold.  The RPi
+has an internal low voltage monitor that shows a red symbol via the
+HDMI monitor, but this is not useful when running headless.  
+
+Earlier models triggered a voltage change on GPIO pin 35, but this is
+apparently no longer active. (As a side note, I
+[discovered](https://raspberrypi.stackexchange.com/a/121903/103399) that
+the legacy access to GPIO status using `sysfs` is probably being
+dropped from newer kernels. The character device ABI, using
+`/dev/gpiochip[0-9]+` is the new way to access GPIOs. On Arch, the
+`gpio-utils` package offers `lsgpio`, etc as easy CLI tools for
+interacting with GPIOs.)
+
+However, the `raspberrypi_hwmon` checks for this low-voltage state,
+which can then be discovered with `vcgencmd
+get_throttled`. [`powermon.sh`](powermon.sh) is a simple script that
+can be run as a `cron` job, and will trigger a shutdown on a
+low-voltage condition. To install:
+
 Check for `raspberrypi_hwmon` module:
 
     # lsmod | grep raspberrypi_hwmon
 
     # pacman -S raspberrypi-firmware cronie
-    # 
+    # curl -LO https://raw.githubusercontent.com/camwebb/klinikDB/main/\
+        doc/powermon.sh
+    # chmod u+x powermon.sh
+    # mkdir bin
+    # mv powermon.sh bin
+    
+    # systemctl start cronie
+    # systemctl enable cronie
+    
+    # EDITOR=emacs crontab -e
+    # crontab -l
+      0,5,10,15,20,25,30,35,40,45,50,55 * * * *  /root/bin/powermon.sh
 
-
-
-Since... batteries
-
-The sysfs approach is legacy and probably being dropped from newer
-kernels. The character device ABI, using /dev/gpiochip[0-9]+ (as
-discussed by @joan), is the new way to access GPIOs. On Arch, the
-gpio-utils package offers lsgpio, gpio-watch, gpio-hammer,
-gpio-event-mon as easy CLI tools for interacting with GPIO character
-devices.
-
-
-
-
-
-
+----
 
 ## Issues
 
