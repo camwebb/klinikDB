@@ -29,6 +29,7 @@ fi
 if [ "$STATUS" -ge 10000 ]; then
     STATUS="$(($STATUS-10000))"
     echo "$DATE" " : Under-voltage has occurred" >> $LOG
+    poweroff
 fi
 if [ "$STATUS" -ge 8 ]; then
     STATUS="$(($STATUS-8))"

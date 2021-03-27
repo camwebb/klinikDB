@@ -47,6 +47,7 @@ root’, and `$` means `as user (pi)`
       ::1         localhost
       127.0.1.1   myhostname.localdomain  myhostname
     # passwd   # set root password
+    # systemctl mask systemd-journald-audit.socket  # kill the audit system
     
 Reboot: 
 
@@ -62,9 +63,10 @@ Set up firewall:
     # ufw enable
     # ufw logging off
 
-Enable wifi access at startup with `# netctl enable wlan0-SSID`. If
-you want a fixed IP on the LAN, rather than DHCP, edit
-`/etc/netctl/wlano-SSID`.
+Enable wifi access at startup with `# netctl enable wlan0-SSID`.
+However, if using `wlan0` as the access point for the linikDB (see
+below), remember to disable this so that it does not clash with
+`systemd-networkd`.
 
 SSHing in may give trouble with terminal commands. Add `TERM=vt100` to
 `~/.bash_profile` for both user and root.
@@ -237,7 +239,142 @@ Check for `raspberrypi_hwmon` module:
     
     # EDITOR=emacs crontab -e
     # crontab -l
-      0,5,10,15,20,25,30,35,40,45,50,55 * * * *  /root/bin/powermon.sh
+      * * * * *  /root/bin/powermon.sh
+
+## Networking
+
+We will configure the RPi to offer a local intranet (on 10.0.0.*) via
+the built-in wifi (`wlan0`), using `hostapd` and leasing IPs with
+`dhcpd`. To connect to the internet, the ethernet port (`eth0`) must
+be connected, which will automatically seek an IP address via
+DHCP. Thanks to [this][1] post for tips.
+
+Get the needed packages:
+
+    # pacman -S hostapd dhcp
+
+First we need to set a static IP for `wlan0`. The direct, CLI way is:
+
+    # ip link set wlan0 down
+    # ip addr flush dev wlan0
+    # ip link set wlan0 up
+    # ip addr add 10.0.0.1/24 dev wlan0
+
+This can be done in `systemd`, which is started by default on Arch,
+and which sets `eth0` to connect via DHCP. Edit
+`/etc/systemd/network/wlan0.network`:
+
+    [Match]
+    Name=wlan0
+    
+    [Network]
+    Address=10.0.0.1/24
+
+Restart the service with: `systemctl restart systemd-networkd` and
+check the IP of `wlan0`: it should say: `inet 10.0.0.1/24`. The new
+configuration will be initialized at startup.
+
+Now we need an access point, with security. Edit
+`/etc/hostapd/hostapd.conf`
+
+    interface=wlan0
+    driver=nl80211
+    ssid=klinikdb
+    hw_mode=g
+    channel=7
+    macaddr_acl=0
+    ignore_broadcast_ssid=0
+    auth_algs=1
+    wpa=3
+    wpa_passphrase=XXXXXXXX
+    wpa_key_mgmt=WPA-PSK
+    wpa_pairwise=TKIP
+    rsn_pairwise=CCMP
+
+(Set your wifi password at `XXXXXXXX`). Finally, we need a DHCP
+server. Edit `/etc/dhcpd.conf`:
+
+    option subnet-mask 255.255.255.0;
+    option routers 10.0.0.1;
+    subnet 10.0.0.0 netmask 255.255.255.0 {
+      range 10.0.0.2 10.0.0.20;
+    }
+
+(Note, adding a `subnet 192.168.1.0 netmask 255.255.255.0 { \n }`
+could prevent DHCP requests coming in from `eth0`; see [here][2])
+
+Enable the new services at start-up:
+
+    systemctl start hostapd
+    systemctl start dhcpd4
+
+Reboot the system to see if you can connect. If it is failing, you can
+always connect the RPi via ethernet and SSH in that way.
+
+## Hardware clock
+
+Preamble...
+
+Testing:
+
+    # emacs /boot/config.txt     # add dtparam=i2c_arm=on
+    # pacman -S i2c-tools
+    # reboot
+    # modprobe i2c-dev
+    # modprobe i2c-bcm2835
+    # modprobe rtc-ds1307
+    # lsmod | grep i2c
+    # lsmod | grep rtc
+    # i2cdetect -y 1
+    # echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
+    # dmesg | grep rtc
+    
+    # timedatectl     
+    # hwclock --show   # error until set
+    # hwclock --set --date "2021-03-16 15:42:00 +0"
+    # hwclock --show  
+    # hwclock -s      
+    # timedatectl     
+
+Direct installation:
+
+    # pacman -S i2c-tools
+    # emacs /boot/config.txt   # add dtparam=i2c_arm=on
+    # emacs /etc/modules-load.d/raspberrypi.conf
+    # cat   /etc/modules-load.d/raspberrypi.conf
+      i2c-dev
+      i2c-bcm2835
+      rtc-ds1307
+    
+    # mkdir -p /usr/lib/systemd/scripts/
+    # emacs /usr/lib/systemd/scripts/rtc
+    # cat   /usr/lib/systemd/scripts/rtc
+      #!/bin/bash
+      echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
+      hwclock -s
+    # chmod 755 /usr/lib/systemd/scripts/rtc
+    # emacs /etc/systemd/system/rtc.service
+    # cat   /etc/systemd/system/rtc.service
+      [Unit]
+      Description=RTClock
+      Before=network.target
+      
+      [Service]
+      ExecStart=/usr/lib/systemd/scripts/rtc
+      Type=oneshot
+      
+      [Install]
+      WantedBy=multi-user.target
+    # systemctl enable rtc
+    # reboot
+
+The very beginning of the boot will always be a fake (old) date, but
+as the services start to be activated, the correct date will be
+adopted and the system journal will correct itself.
+
+See: https://wiki.52pi.com/index.php?title=DS1307_RTC_Module_with_BAT_for_Raspberry_Pi_SKU:_EP-0059
+https://archlinuxarm.org/wiki/Raspberry_Pi
+https://gist.github.com/grubernd/aed721614b36aaa31fd97ef5ab1ec6be
 
 ----
 
@@ -247,5 +384,8 @@ Check for `raspberrypi_hwmon` module:
  * too much audit in journalctl. 
      * add audit=0 to bootargs in boot.tx (and remake with ./mkscr)
      * auditctl -e0
-     
 
+[1]: https://nims11.wordpress.com/2012/04/27/hostapd-the-linux-way-to-create-virtual-wifi-access-point/     
+[2]: https://wiki.archlinux.org/index.php/Dhcpd
+
+sudo journalctl --vacuum-time=1h
