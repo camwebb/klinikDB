@@ -6,9 +6,9 @@ _Une base de données de patients et de pharmacies légère et
 personnalisable pour les petits cliniques médicales_
 
 KlinikDB fonctionne comme un serveur sur un ordinateur portable (bon
-marché) ou un [RaspberryPi] [1], et est accessible via un réseau Wi-Fi
+marché) ou un [RaspberryPi][1], et est accessible via un réseau Wi-Fi
 local à l'aide d'un site Web navigateur sur un ordinateur portable ou
-un smartphone Clinet. _Aucune connexion Internet n'est La
+un smartphone Clinet. _Aucune connexion Internet n'est nécessaire_. La
 confidentialité des patients est une priorité et les sauvegardes de la
 base de données sont crypté.
 
