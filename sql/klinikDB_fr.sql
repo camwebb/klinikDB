@@ -2411,11 +2411,11 @@ CREATE TABLE `vax` (
 
 INSERT INTO vax (`short`, `notes`) VALUES 
  ('Ped: BCG','BCG'),  
- ('Ped: Polio, 0 mois', 'Polio'), 
- ('Ped: BCG et Polio, 0 mois','BCG et Polio'),
- ('Ped: Vax, 6 mois','DTC Hep Hib 1 , PCV 10-1 , POLIO 1 , Rotavirus 1'),
- ('Ped: Vax, 10 mois','DTC Hep Hib 2 , PCV 10-2 , POLIO 2 , Rotavirus 2'),
- ('Ped: Vax, 14 mois','DTC Hep Hib 3 , PCV 10-3 , POLIO 3 , VPI'),
+ ('Ped: Polio, 0 semaine', 'Polio'), 
+ ('Ped: BCG et Polio, 0 semaine','BCG et Polio'),
+ ('Ped: Vax, 6 semaine','DTC Hep Hib 1 , PCV 10-1 , POLIO 1 , Rotavirus 1'),
+ ('Ped: Vax, 10 semaine','DTC Hep Hib 2 , PCV 10-2 , POLIO 2 , Rotavirus 2'),
+ ('Ped: Vax, 14 semaine','DTC Hep Hib 3 , PCV 10-3 , POLIO 3 , VPI'),
  ('Ped: Rougeole', 'Rougeole'),
  ('Tetanique, Vat 1','Tetanique'),
  ('Tetanique, Vat 2','Tetanique'),

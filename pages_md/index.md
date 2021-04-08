@@ -1,3 +1,28 @@
+% Documentation KlinikDB
+
+# Documentation KlinikDB
+
+## Fond
+
+ * [Histoire et aperçu](overview.html)
+ * [Remerciements](acknowledgments.html)
+ * [Flux de travail de collecte de données](workflow.html)
+
+## Utilisation du système
+
+ * [Rôles utilisateurs](roles.html): administrateur, médical, pharmacie
+ * [Utilisation générale](usage.html) de la base de données: vues, nouveaux enregistrements, édition
+ * [Saisie et gestion](entry.html) des données des patients et des pharmacies
+ * [Rapports](reporting.html)
+ * [Codes CIM-10](cim10_classes.html)
+ 
+## Détails techniques
+
+ * [Technologies de base](tech.html)
+ * Personnalisation: ajout de tableaux et de nouveaux rapports
+
+<!-- 
+
 % KlinikDB Documentation
 
 # KlinikDB Documentation
@@ -20,3 +45,4 @@
  * Core [technologies](tech.html)
  * Customization: adding tables and new reports
 
+-->

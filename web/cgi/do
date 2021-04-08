@@ -437,7 +437,7 @@ function queryDB( query            , row, i, cmd ) {
   gsub(/`/,"\\`",query);  # if writing directly, need: \\\`
   gsub(/\n/," ",query);
   gsub(/  */," ",query);
-  cmd = "/bin/echo -e \"" query "\" | mysql -u " USER " -p" PASS " -h " HOST " -B --column-names " DB
+  cmd = "/bin/echo -e \"" query "\" | mysql -u " USER " -p" PASS " -h " HOST " -B --column-names --default-character-set=utf8 " DB
   # print cmd;
   row = -1;
   FS = "\t";
