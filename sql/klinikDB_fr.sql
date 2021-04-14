@@ -12,7 +12,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `userName` (`UserName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN'),(2,'medical','CHANGEME','MEDICAL'),(3,'pharmacy','CHANGEME','PHARMACY');
+-- INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN'),(2,'medical','CHANGEME','MEDICAL'),(3,'pharmacy','CHANGEME','PHARMACY');
 
 DROP TABLE IF EXISTS `antenatal`;
 
@@ -102,7 +102,7 @@ CREATE TABLE `doc` (
   UNIQUE KEY `nama` (`nama`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO `doc` VALUES (1,'Test Doctor 1');
+INSERT INTO `doc` VALUES (1,'Thomas Razafy');
 
 DROP TABLE IF EXISTS `drug`;
 
@@ -2284,7 +2284,7 @@ CREATE TABLE `patient` (
   CONSTRAINT `patient_ibfk_2` FOREIGN KEY (`birthvillage`) REFERENCES `dusun` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `patient` VALUES (1,1,'Anna','F','Jim','Mary',NULL,'2001-01-01',0,1,1,NULL);
+-- INSERT INTO `patient` VALUES (1,1,'Anna','F','Jim','Mary',NULL,'2001-01-01',0,1,1,NULL);
 
 DELIMITER ;;
 CREATE  TRIGGER `patient_birthdate` BEFORE INSERT ON `patient` FOR EACH ROW
@@ -2315,7 +2315,7 @@ CREATE TABLE `visit` (
   CONSTRAINT `visit_ibfk_4` FOREIGN KEY (`location`) REFERENCES `dusun` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `visit` VALUES (1,1,6,4000,'2021-01-23',1,1);
+-- INSERT INTO `visit` VALUES (1,1,6,4000,'2021-01-23',1,1);
 
 DELIMITER ;;
 CREATE  TRIGGER `sign_of_payment` BEFORE INSERT ON `visit` FOR EACH ROW

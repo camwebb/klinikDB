@@ -12,7 +12,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `userName` (`UserName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN'),(2,'medical','CHANGEME','MEDICAL'),(3,'pharmacy','CHANGEME','PHARMACY');
+-- INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN'),(2,'medical','CHANGEME','MEDICAL'),(3,'pharmacy','CHANGEME','PHARMACY');
 
 DROP TABLE IF EXISTS `antenatal`;
 
@@ -47,7 +47,7 @@ CREATE TABLE `antenatal` (
   CONSTRAINT `patientID` FOREIGN KEY (`patientID`) REFERENCES `patient` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `antenatal` VALUES (1,1,1,1,0,0,'2021-01-23',1,1,45.0,NULL,160,120,80,40,20,NULL,NULL,'2020-12-01','2021-08-01','low',NULL);
+-- INSERT INTO `antenatal` VALUES (1,1,1,1,0,0,'2021-01-23',1,1,45.0,NULL,160,120,80,40,20,NULL,NULL,'2020-12-01','2021-08-01','low',NULL);
 
 DROP TABLE IF EXISTS `diagnoses`;
 
@@ -71,7 +71,7 @@ CREATE TABLE `diagnoses` (
     REFERENCES `doc` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `diagnoses` VALUES (1,1,'2021-01-23',0,1,201,NULL);
+-- INSERT INTO `diagnoses` VALUES (1,1,'2021-01-23',0,1,201,NULL);
 
 DROP TABLE IF EXISTS `doc`;
 
@@ -82,7 +82,7 @@ CREATE TABLE `doc` (
   UNIQUE KEY `nama` (`nama`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO `doc` VALUES (1,'Test Doctor 1');
+INSERT INTO `doc` VALUES (1,'Thomas Razafy');
 
 DROP TABLE IF EXISTS `drug`;
 
@@ -120,7 +120,7 @@ CREATE TABLE `drugDispense` (
   CONSTRAINT `drugDispense_ibfk_3` FOREIGN KEY (`docID`) REFERENCES `doc` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `drugDispense` VALUES (1,1040,50,'2021-01-23','one per day',1,1);
+-- INSERT INTO `drugDispense` VALUES (1,1040,50,'2021-01-23','one per day',1,1);
 
 DROP TABLE IF EXISTS `drugGeneric`;
 
@@ -190,7 +190,7 @@ CREATE TABLE `drugStock` (
     REFERENCES `drugPackage` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `drugStock` VALUES (1,1037,0,3,'2021-01-22',NULL,NULL,NULL);
+-- INSERT INTO `drugStock` VALUES (1,1037,0,3,'2021-01-22',NULL,NULL,NULL);
 
 DROP TABLE IF EXISTS `drugSuppl`;
 
@@ -218,7 +218,38 @@ CREATE TABLE `dusun` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-INSERT INTO `dusun` VALUES (1,'Manombo'),(2,'Vohidroy');
+INSERT INTO `dusun` (`id`, `dusun`) VALUES
+(1, 'Ambahipiky'),
+(2, 'Ambatsaratova'),
+(3, 'Amboangibe'),
+(4, 'Ambodiria'),
+(5, 'Ampamohaza'),
+(6, 'Analameloka'),
+(7, 'Anambotaky'),
+(8, 'Anangongo'),
+(9, 'Andrafia'),
+(10, 'Anivorano'),
+(11, 'Ankazobaky'),
+(12, 'Ankazotsararavina'),
+(13, 'Antavibe'),
+(14, 'Antseranampasy'),
+(15, 'Bekaraoky'),
+(16, 'Karimbelo'),
+(17, 'Mahatsinjo'),
+(18, 'Maheritraka'),
+(19, 'Manombo'),
+(20, 'Marodia'),
+(21, 'Maropanahy'),
+(22, 'Marovandrika'),
+(23, 'Marovary'),
+(24, 'Namohora'),
+(25, 'Sahamahitsy'),
+(26, 'Sily'),
+(27, 'Takoandra'),
+(28, 'Tsaratanana'),
+(29, 'Vohidroy'),
+(30, 'Vohilava');
+
 
 DROP TABLE IF EXISTS `icd10`;
 
