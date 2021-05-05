@@ -523,12 +523,14 @@ DROP TABLE IF EXISTS `dusun`;
 
 CREATE TABLE `dusun` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `commune` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `dusun` varchar(50) COLLATE utf8_bin NOT NULL,
+  `sous` varchar(50) COLLATE utf8_bin DEFAULT NULL,
 --  `desa` varchar(50) COLLATE utf8_bin NOT NULL,
 --  `kecamatan` varchar(30) COLLATE utf8_bin NOT NULL,
 --  `kabupaten` varchar(20) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `dusun` (`dusun`)
+  UNIQUE KEY `dusun` (`dusun`,`sous`)
 ) ;
 
 INSERT INTO dusun (`dusun`) VALUES
