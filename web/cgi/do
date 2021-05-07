@@ -334,7 +334,7 @@ function myQuery() {
 
 function backup(     err, time, file) {
   time = strftime("%Y%m%d-%H%M")
-  file = "../backup/" time "_bbbrdb.sql"
+  file = "../backup/" time "_manombo.sql"
   htmlHeader("Backup status")
   system("rm -f ../backup/*.gz.asc")
   
@@ -347,9 +347,9 @@ function backup(     err, time, file) {
   if (system("rm -f " file ".gz"))
     err = err " rm"
   if (!err)
-    print "success!"
+    print "<p>Success. Download <a href=\"" file ".gz.asc\">this file</a> and copy to the backup disk</p>"
   else
-    print err " failed!"
+    print "<p>Error: " err " failed!</p>"
   htmlFooter()
 }
 
