@@ -247,7 +247,8 @@ We will configure the RPi to offer a local intranet (on 10.0.0.*) via
 the built-in wifi (`wlan0`), using `hostapd` and leasing IPs with
 `dhcpd`. To connect to the internet, the ethernet port (`eth0`) must
 be connected, which will automatically seek an IP address via
-DHCP. Thanks to [this][1] post for tips.
+DHCP. Thanks to these posts for tips ([1][1], [2][4], [3][5], [4][6],
+[5][7]).
 
 Get the needed packages:
 
@@ -281,15 +282,15 @@ Now we need an access point, with security. Edit
     driver=nl80211
     ssid=klinikdb
     hw_mode=g
-    channel=7
+    channel=6
     macaddr_acl=0
     ignore_broadcast_ssid=0
-    auth_algs=1
-    wpa=3
-    wpa_passphrase=XXXXXXXX
-    wpa_key_mgmt=WPA-PSK
-    wpa_pairwise=TKIP
-    rsn_pairwise=CCMP
+    auth_algs=3
+    # wpa=2
+    # wpa_passphrase=XXXXXXXX
+    # wpa_key_mgmt=WPA-PSK
+    # wpa_pairwise=TKIP
+    # rsn_pairwise=CCMP
 
 (Set your wifi password at `XXXXXXXX`). Finally, we need a DHCP
 server. Edit `/etc/dhcpd.conf`:
@@ -307,6 +308,8 @@ Enable the new services at start-up:
 
     systemctl start hostapd
     systemctl start dhcpd4
+    systemctl enable hostapd
+    systemctl enable dhcpd4
 
 Reboot the system to see if you can connect. If it is failing, you can
 always connect the RPi via ethernet and SSH in that way.
@@ -376,6 +379,12 @@ See: https://wiki.52pi.com/index.php?title=DS1307_RTC_Module_with_BAT_for_Raspbe
 https://archlinuxarm.org/wiki/Raspberry_Pi
 https://gist.github.com/grubernd/aed721614b36aaa31fd97ef5ab1ec6be
 
+## Sudo
+
+    # pacman -S sudo
+    # EDITOR=emacs visudo # add: http ALL=(ALL) NOPASSWD: /usr/bin/poweroff  
+
+
 ----
 
 ## Issues
@@ -387,5 +396,9 @@ https://gist.github.com/grubernd/aed721614b36aaa31fd97ef5ab1ec6be
 
 [1]: https://nims11.wordpress.com/2012/04/27/hostapd-the-linux-way-to-create-virtual-wifi-access-point/     
 [2]: https://wiki.archlinux.org/index.php/Dhcpd
+[4]: https://www.linux.com/training-tutorials/create-secure-linux-based-wireless-access-point/
+[5]: https://wireless.wiki.kernel.org/en/users/Documentation/hostapd
+[6]: https://gist.github.com/renaudcerrato/db053d96991aba152cc17d71e7e0f63c
+[7]: https://hawksites.newpaltz.edu/myerse/2018/06/08/hostapd-on-raspberry-pi/
 
 sudo journalctl --vacuum-time=1h

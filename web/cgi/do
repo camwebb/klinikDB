@@ -7,31 +7,43 @@
 
 BEGIN{
 
-  # PROCESS COOKIES
+  # Find machine
+  cmd = "uname -a"
+  cmd | getline result
+  if (result ~ /aarch64/)
+    ARCH = "ARM"
+  else
+    ARCH = "non-ARM"
+  
+  # Process cookies
   if (ENVIRON["HTTP_SESSION"])
     split(ENVIRON["HTTP_SESSION"], qs, "&")
   for (q in qs) {
     split(qs[q], qp, "=")
     COOKIE[qp[1]] = substr(qp[2],1,200) # note, _not_ yet urldecoded
   }
-  
+
+  # Read DB credentials
   config()
   
-  # READ QUERY STRING
+  # Read query string
   split(ENVIRON["QUERY_STRING"], query, "&")
-  for (i1 in query)
+  for (i in query)
 	{
-	  split(query[i1], tmpq, "=")
+	  split(query[i], tmpq, "=")
 	  f[tmpq[1]] = substr(urldecode(tmpq[2]),1,2000)
    }
 
   # DETERMINE AND EXECUTE METHOD
-  # NB: variables in these functions  are not protected; care not to 
-  #     introduce new variable in this main loop with clashing names 
-
-  if      (f["method"] == "testlogin")  testlogin()
+  
+  # allow shutdown without login, in case of emergency
+  if      (f["method"] == "shutdown")  shutdown()
+  
+  else if      (f["method"] == "testlogin")  testlogin()
   else if (!COOKIE["loggedin"])
     login()
+
+  # need to be logged in to see these
   else if      (f["method"] == "totpat")  totalPatients()
   # else if      (f["method"] == "listpat")  listPatients()
   else if      (f["method"] == "lowdrugs")  lowDrugs()
@@ -41,7 +53,6 @@ BEGIN{
   else if      (f["method"] == "backup")  backup()
   else if      (f["method"] == "ip")  printip()
   else if      (f["method"] == "periodq")  periodq()
-
 
   # other/no arguments
   else listSummaries()
@@ -82,31 +93,28 @@ function testlogin(   sql) {
   clearDBQ()
 }
 
-
-function htmlHeader(title) 
-{
-  print "Content-type: text/html\n"
+function htmlHeader(title)  {
+  
+  print "Content-type: text/html; charset=UTF-8\n"
   print " \
   <!DOCTYPE html>                                               \
   <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">     \
-  <head>                                                        \
+  <head>                                                                \
   <title>" title "</title>                                              \
-  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/> \
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/> \
-  <link href=\"https://fonts.googleapis.com/css?family=Lato:400,300,600\" rel=\"stylesheet\" type=\"text/css\"/> \
-  <link rel=\"stylesheet\" href=\"../css/normalize.css\"/>                 \
-  <link rel=\"stylesheet\" href=\"../css/skeleton.css\"/>                  \
-  <link rel=\"stylesheet\" href=\"../css/override.css\"/>                  \
-  <link rel=\"icon\" type=\"image/png\" href=\"../img/favicon.ico\"/>      \
+  <!-- <link href=\"https://fonts.googleapis.com/css?family=Lato:400,300,600\" rel=\"stylesheet\" type=\"text/css\"/> --> \
+  <link rel=\"stylesheet\" href=\"../css/normalize.css\"/>              \
+  <link rel=\"stylesheet\" href=\"../css/skeleton.css\"/>               \
+  <link rel=\"stylesheet\" href=\"../css/override.css\"/>               \
+  <link rel=\"icon\" type=\"image/png\" href=\"../img/favicon.ico\"/>   \
   </head>                                                               \
   <body>                                                                \
   <div class=\"container\">                                             \
-  <div class=\"row\">                                                 \
+  <div class=\"row\">                                                   \
   <div class=\"nine columns\" style=\"margin-top: 5%\">"
 }
 
-function htmlFooter()
-{
+function htmlFooter() {
   print " \
     </div> \
     <div class=\"three columns\" style=\"margin-top: 5%\"> \
@@ -122,9 +130,8 @@ function htmlFooter()
 
 }
 
-function listSummaries()
-{
-
+function listSummaries() {
+  
   htmlHeader("Tools")
   
   print "<h1>Tools</h1>"
@@ -166,7 +173,8 @@ function listSummaries()
   print "<h2>Manage Raspberry Pi</h2>"
   print "<ul>"
   # print "<li><a href=\"do?method=ip\">What is my IP?</a></li>"
-  print "<li><a href=\"do?method=shutdown\">Shutdown</a></li>"
+  if (ARCH == "ARM")
+    print "<li><a href=\"do?method=shutdown\">Shutdown</a></li>"
   print "</ul>"
   
   htmlFooter()
@@ -334,7 +342,7 @@ function backup(     err, time, file) {
     err = "mysqldump"
   if (system("gzip " file))
     err = err " gzip"
-  if (system("gpg -e -a --trust-model always -r cw@camwebb.info -r gpg@healthinharmony.org --homedir /srv/http/gnupg --no-permission-warning " file ".gz"))
+  if (system("gpg -e -a --trust-model always -r cw@camwebb.info -r gpg@healthinharmony.org --homedir ../../gnupg --no-permission-warning " file ".gz"))
     err = err " gpg"
   if (system("rm -f " file ".gz"))
     err = err " rm"
@@ -623,5 +631,10 @@ function config() {
 }
         
 function shutdown() {
-  system("sudo shutdown")
+  htmlHeader("Shutdown")
+  print "<p>Shutting down in 5 seconds. Check that the green light is off befor\
+e unplugging the power.</p>"
+  htmlFooter()
+  
+  system("/usr/bin/sleep 5 ; /usr/bin/sudo /usr/bin/poweroff")
 }
