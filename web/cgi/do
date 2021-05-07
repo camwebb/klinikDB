@@ -1,40 +1,85 @@
 #!/usr/bin/gawk -f
 
-# General tools used with clinicDB
-# Copyright (c) 2012-2020, Campbell Webb
+# General tools used with KliniKDB
+# Copyright (c) 2012-2021, Campbell Webb
 # Free/Open Source Software using BSD 2-clause license
-# Requires gawk v4. See http://www.gnu.org/software/gawk/
+# Requires Gawk v4. http://www.gnu.org/software/gawk/
 
 BEGIN{
+
+  # PROCESS COOKIES
+  if (ENVIRON["HTTP_SESSION"])
+    split(ENVIRON["HTTP_SESSION"], qs, "&")
+  for (q in qs) {
+    split(qs[q], qp, "=")
+    COOKIE[qp[1]] = substr(qp[2],1,200) # note, _not_ yet urldecoded
+  }
   
   config()
   
   # READ QUERY STRING
-  split(ENVIRON["QUERY_STRING"], query, "&");
+  split(ENVIRON["QUERY_STRING"], query, "&")
   for (i1 in query)
 	{
-	  split(query[i1], tmpq, "=");
-	  f[tmpq[1]] = substr(urldecode(tmpq[2]),1,2000); 
+	  split(query[i1], tmpq, "=")
+	  f[tmpq[1]] = substr(urldecode(tmpq[2]),1,2000)
    }
 
   # DETERMINE AND EXECUTE METHOD
   # NB: variables in these functions  are not protected; care not to 
   #     introduce new variable in this main loop with clashing names 
 
-  if           (f["method"] == "totpat")  totalPatients() ;
-  else if      (f["method"] == "listpat")  listPatients() ;
-  else if      (f["method"] == "lowdrugs")  lowDrugs() ;
-  else if      (f["method"] == "expdrugs")  expDrugs() ;
-  else if      (f["method"] == "alldrugs")  allDrugs() ;
-  else if      (f["method"] == "myquery")  myQuery() ;
-  else if      (f["method"] == "backup")  backup() ;
-  else if      (f["method"] == "ip")  printip() ;
-  else if      (f["method"] == "periodq")  periodq() ;
+  if      (f["method"] == "testlogin")  testlogin()
+  else if (!COOKIE["loggedin"])
+    login()
+  else if      (f["method"] == "totpat")  totalPatients()
+  # else if      (f["method"] == "listpat")  listPatients()
+  else if      (f["method"] == "lowdrugs")  lowDrugs()
+  else if      (f["method"] == "expdrugs")  expDrugs()
+  else if      (f["method"] == "alldrugs")  allDrugs()
+  # else if      (f["method"] == "myquery")  myQuery()
+  else if      (f["method"] == "backup")  backup()
+  else if      (f["method"] == "ip")  printip()
+  else if      (f["method"] == "periodq")  periodq()
+
 
   # other/no arguments
-  else listSummaries() ;
+  else listSummaries()
   
-  exit ;
+  exit
+}
+
+function login() {
+  
+  htmlHeader("Login")
+  print "<form method=\"get\" action=\"do\">"
+  print "<input type=\"hidden\" name=\"method\" value=\"testlogin\" />"
+  print "<p><b>Log in to use tools</b><br/><br/>"
+  print "User: <input type=\"text\" name=\"user\" size=\"12\"/> "
+  print "Password: <input type=\"text\" name=\"pw\" size=\"12\"/>"
+  print "<input type=\"submit\" value=\"Submit\" /></p>"
+  htmlFooter()
+
+}
+
+function testlogin(   sql) {
+  sql = "SELECT Role FROM Users where UserName = '" f["user"] "' AND "  \
+    "Password = '" f["pw"] "';"
+  queryDB(sql)
+  if (DBQ[1,"Role"] == "ADMIN") {
+    print "X-Replace-Session: loggedin=1"
+    htmlHeader("Logged in")
+    print "<p>Logged in as ADMIN user. Go to <a href=\"do\"/>Reports"\
+      "</a> page.</p>"
+    htmlFooter()
+  }
+  else { 
+    htmlHeader("Login fail")
+    print "<p>Login failed. <a href=\"do\"/>Try again"  \
+      "</a>.</p>"
+    htmlFooter()
+  }
+  clearDBQ()
 }
 
 
@@ -58,7 +103,6 @@ function htmlHeader(title)
   <div class=\"container\">                                             \
   <div class=\"row\">                                                 \
   <div class=\"nine columns\" style=\"margin-top: 5%\">"
-  
 }
 
 function htmlFooter()
@@ -81,47 +125,59 @@ function htmlFooter()
 function listSummaries()
 {
 
-  htmlHeader("Tools");
-  print "<h1>Tools</h1>" ;
-  print "<h2>Patients</h2>" ;
-  print "<form method=\"get\" action=\"do\">";
-  print "<ul>";
-  # print "<li><a href=\"do?method=totpat\">Total number of patients, etc</a></li>";
-  print "<li>Data summaries: " ;
+  htmlHeader("Tools")
+  
+  print "<h1>Tools</h1>"
+  
+  print "<h2>Patients</h2>"
+  print "<form method=\"get\" action=\"do\">"
+  print "<ul>"
+  print "<li><a href=\"do?method=totpat\">Total number of patients, etc</a>"\
+    "</li>"
+  
+  print "<li>Data summaries: "
   print "from <input type=\"text\" name=\"from\" size=\"12\" value=\"2020-01-01\"/>, "
   print "to <input type=\"text\" name=\"to\" size=\"12\" value=\"2022-12-31\"/>. "
   print "<input type=\"hidden\" name=\"method\" value=\"periodq\" />"
   print "<input type=\"submit\" value=\"Submit\" /></li>"
-  print "</ul></form>";
-  print "<h2>Pharmacy</h2>" ;
-  print "<ul>";
-  print "<li><a href=\"do?method=lowdrugs\">Drugs to be ordered</a></li>";
-  print "<li><a href=\"do?method=expdrugs\">Drugs soon to expire</a></li>";
-  print "<li><a href=\"do?method=alldrugs\">Drugs in stock</a></li>";
-  print "</ul>";
-  # print "<h2>Backup</h2>" ;
-  # print "<ul>";
-  # print "<li><a href=\"do?method=backup\">Make backup file</a></li>";
-  # print "<li><a href=\"do?method=listpat\">Make patient list as CSV</a></li>";
-  # print "<li><a href=\"do?method=ip\">What is my IP?</a></li>";
-  # print "</ul>";
+  print "</ul></form>"
+  
+  print "<h2>Pharmacy</h2>"
+  print "<ul>"
+  print "<li><a href=\"do?method=lowdrugs\">Drugs to be ordered</a></li>"
+  print "<li><a href=\"do?method=expdrugs\">Drugs soon to expire</a></li>"
+  print "<li><a href=\"do?method=alldrugs\">Drugs in stock</a></li>"
+  print "</ul>"
 
-  # print "<h2>Run your own SQL SELECT query</h2>";
-  # print "<p>See <a href=\"../img/rel.png\">Entity-Relationship</a> diagram</p>";
-  # print "<form method=\"get\" action=\"run\">";
-  # print "<p><textarea rows=\"5\" cols=\"80\" name=\"query\">SELECT </textarea><br/>";
-  # print "Do not limit output to 100 lines : <input type=\"checkbox\" name=\"nolimit\" value=\"true\" /><br/>";
-  # print "<input type=\"hidden\" name=\"method\" value=\"myquery\" />";
-  # print "<input type=\"submit\" value=\"Submit\" /></p></form>";
-  htmlFooter() ;
-  exit;
+  print "<h2>Backup</h2>"
+  print "<ul>"
+  print "<li><a href=\"do?method=backup\">Make backup file</a></li>"
+  # print "<li><a href=\"do?method=listpat\">Make patient list as CSV</a></li>"
+  print "</ul>"
+
+  # print "<h2>Run your own SQL SELECT query</h2>"
+  # print "<p>See <a href=\"../img/rel.png\">Entity-Relationship</a> diagram</p>"
+  # print "<form method=\"get\" action=\"do\">"
+  # print "<p><textarea rows=\"5\" cols=\"80\" name=\"query\">SELECT </textarea><br/>"
+  # print "Do not limit output to 100 lines : <input type=\"checkbox\" name=\"nolimit\" value=\"true\" /><br/>"
+  # print "<input type=\"hidden\" name=\"method\" value=\"myquery\" />"
+  # print "<input type=\"submit\" value=\"Submit\" /></p></form>"
+
+  print "<h2>Manage Raspberry Pi</h2>"
+  print "<ul>"
+  # print "<li><a href=\"do?method=ip\">What is my IP?</a></li>"
+  print "<li><a href=\"do?method=shutdown\">Shutdown</a></li>"
+  print "</ul>"
+  
+  htmlFooter()
+  exit
 }
 
 function periodq(     sql)
 {
-  htmlHeader("Time period summaries");
-  print "<h1>Time period summaries</h1>" ;
-  print "<p><b>From " f["from"] " to " f["to"] "</b></p>" ;
+  htmlHeader("Time period summaries")
+  print "<h1>Time period summaries</h1>"
+  print "<p><b>From " f["from"] " to " f["to"] "</b></p>"
 
   sql = "SELECT klinik AS 'Klink', COUNT(*) AS 'Total visits' \
          FROM visit \
@@ -129,12 +185,12 @@ function periodq(     sql)
          AND visit.date < '" f["to"] "' \
          AND amount > 0 \
          GROUP BY klinik;"
-  queryDB(sql);
+  queryDB(sql)
   print "<p>1. Total visits by klinik, during period:</p>"
   print "<div style=\"margin-left:50px;\">"
-  printTable();
+  printTable()
   print "</div>"
-  clearDBQ();
+  clearDBQ()
 
   # sql = "SELECT dusun.dusun AS 'Dusun', COUNT(*) AS 'Visits' \
   #        FROM visit , patient, dusun \
@@ -145,12 +201,12 @@ function periodq(     sql)
   #        AND amount > 0 \
   #        GROUP BY dusun.dusun \
   #        ORDER BY dusun.dusun;"
-  # queryDB(sql);
+  # queryDB(sql)
   # print "<p>2. Visits to mobile clinic, by home dusun of paptient, during period:</p>"
   # print "<div style=\"margin-left:50px;\">"
-  # printTable();
+  # printTable()
   # print "</div>"
-  # clearDBQ();
+  # clearDBQ()
 
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
     SELECT DISTINCT patient.id FROM patient, visit \
@@ -159,9 +215,9 @@ function periodq(     sql)
     AND visit.date < '" f["to"] "' \
     AND amount > 0 \
   ) AS A;"
-  queryDB(sql);
-  print "<p>3. Total patients during period is: <b>" DBQ[1,"T"] "</b></p>";
-  clearDBQ();
+  queryDB(sql)
+  print "<p>3. Total patients during period is: <b>" DBQ[1,"T"] "</b></p>"
+  clearDBQ()
 
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
     SELECT DISTINCT patient.id FROM patient LEFT JOIN ( \
@@ -172,9 +228,9 @@ function periodq(     sql)
     WHERE V.EARLIEST >= '" f["from"] "' \
     AND V.EARLIEST   <= '" f["to"]   "' \
   ) AS A;"
-  queryDB(sql);
-  print "<p>4. Total new patients during period is: <b>" DBQ[1,"T"] "</b></p>";
-  clearDBQ();
+  queryDB(sql)
+  print "<p>4. Total new patients during period is: <b>" DBQ[1,"T"] "</b></p>"
+  clearDBQ()
 
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
       SELECT DISTINCT patient.id FROM patient, visit \
@@ -185,10 +241,10 @@ function periodq(     sql)
       AND birthdate != '1899-12-31' \
       AND (to_days(date(now())) - to_days(birthdate)0) < (5 * 365) \
     ) AS A;"
-  queryDB(sql);
+  queryDB(sql)
   print "<p>5. Total patients < 5 years during period is: <b>" DBQ[1,"T"] \
-    "</b></p>";
-  clearDBQ();
+    "</b></p>"
+  clearDBQ()
 
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
       SELECT DISTINCT patient.id FROM patient, visit \
@@ -199,10 +255,10 @@ function periodq(     sql)
       AND birthdate != '1899-12-31' \
       AND (to_days(date(now())) - to_days(birthdate)) > (65 * 365) \
     ) AS A;"
-  queryDB(sql);
+  queryDB(sql)
   print "<p>6. Total patients > 65 years during period is: <b>" DBQ[1,"T"] \
-    "</b></p>";
-  clearDBQ();
+    "</b></p>"
+  clearDBQ()
 
   sql = "SELECT dusun.dusun AS Dusun, COUNT(*) AS 'Patients' FROM ( \
     SELECT DISTINCT patient.id , patient.dusunID FROM patient, visit \
@@ -214,12 +270,12 @@ function periodq(     sql)
   LEFT JOIN dusun ON A.dusunID = dusun.id \
   GROUP BY dusun.id \
   ORDER BY dusun.dusun;"
-  queryDB(sql);
+  queryDB(sql)
   print "<p>7. Total patients served, by home village, during period:</p>"
   print "<div style=\"margin-left:50px;\">"
-  printTable();
+  printTable()
   print "</div>"
-  clearDBQ();
+  clearDBQ()
 
   sql = "SELECT visitType.label AS 'Visit type', COUNT(*) AS 'Number of visits'\
     FROM visit, visitType \
@@ -229,12 +285,12 @@ function periodq(     sql)
     AND amount > 0 \
     GROUP BY visitType.label \
     ORDER BY visitType.label;"
-  queryDB(sql);
+  queryDB(sql)
   print "<p>8. Visit types:</p>"
   print "<div style=\"margin-left:50px;\">"
-  printTable();
+  printTable()
   print "</div>"
-  clearDBQ();
+  clearDBQ()
 
   sql = "SELECT icd10.code, icd10.name AS 'Diagnosis', COUNT(*) AS 'Patient-cases' FROM ( \
     SELECT DISTINCT patientID , icd10ID FROM diagnoses \
@@ -244,31 +300,31 @@ function periodq(     sql)
   GROUP by icd10ID \
   ORDER by COUNT(*) DESC, icd10.name \
   LIMIT 25;"
-  queryDB(sql);
+  queryDB(sql)
   print "<p>9. Diagnoses (top 25):</p>"
   print "<div style=\"margin-left:50px;\">"
-  printTable();
+  printTable()
   print "</div>"
-  clearDBQ();
+  clearDBQ()
   
-  htmlFooter() ;
+  htmlFooter()
 }
 
 
 function myQuery() {
-  htmlHeader("Results of your query");
-  print "<h1>Results of your query</h1>" ;
-  if (f["query"] ~ /(INSERT|UPDATE|DELETE)/) error("SELECT ONLY!");
-  if (f["query"] !~ ";")  f["query"] = f["query"] " ;";
+  htmlHeader("Results of your query")
+  print "<h1>Results of your query</h1>"
+  if (f["query"] ~ /(INSERT|UPDATE|DELETE)/) error("SELECT ONLY!")
+  if (f["query"] !~ ";")  f["query"] = f["query"] " ;"
   if (f["nolimit"] != "true") \
-    f["query"] = gensub(/;/," LIMIT 0,100;", "G", f["query"]);
-  queryDB(f["query"]);
-  printTable();
-  htmlFooter() ;
-  exit;
+    f["query"] = gensub(/;/," LIMIT 0,100;", "G", f["query"])
+  queryDB(f["query"])
+  printTable()
+  htmlFooter()
+  exit
 }
 
-function backup(     err) {
+function backup(     err, time, file) {
   time = strftime("%Y%m%d-%H%M")
   file = "../backup/" time "_bbbrdb.sql"
   htmlHeader("Backup status")
@@ -278,7 +334,7 @@ function backup(     err) {
     err = "mysqldump"
   if (system("gzip " file))
     err = err " gzip"
-  if (system("gpg -e -a --trust-model always -r cw@camwebb.info -r yudi@alamsehatlestari.org -r gpg@healthinharmony.org --homedir /var/www/html/gnupg --no-permission-warning " file ".gz"))
+  if (system("gpg -e -a --trust-model always -r cw@camwebb.info -r gpg@healthinharmony.org --homedir /srv/http/gnupg --no-permission-warning " file ".gz"))
     err = err " gpg"
   if (system("rm -f " file ".gz"))
     err = err " rm"
@@ -291,16 +347,16 @@ function backup(     err) {
 
 
 function totalPatients() {
-  htmlHeader("Total patients");
-  print "<h1>Total patients</h1>" ;
-  queryDB("SELECT COUNT(*) AS tot FROM patient;");
-  print "<p>Total patients in DB is: " DBQ[1,"tot"] "</p>";
+  htmlHeader("Total patients")
+  print "<h1>Total patients</h1>"
+  queryDB("SELECT COUNT(*) AS tot FROM patient;")
+  print "<p>Total patients in DB is: " DBQ[1,"tot"] "</p>"
   
-  clearDBQ();
+  clearDBQ()
 
-  queryDB("SELECT COUNT(*) AS tot FROM (SELECT patientID, `date` FROM visit GROUP BY patientID, `date`) AS alllines;"); 
-  print "<p>The total number of visits (distinct person visits per day) is: " DBQ[1,"tot"] "</p>";
-  htmlFooter() ;
+  queryDB("SELECT COUNT(*) AS tot FROM (SELECT patientID, `date` FROM visit GROUP BY patientID, `date`) AS alllines;")
+  print "<p>The total number of visits (distinct person visits per day) is: " DBQ[1,"tot"] "</p>"
+  htmlFooter()
 }
 
 function listPatients() {
@@ -323,7 +379,7 @@ function listPatients() {
       DBQ[i,"mothername"], DBQ[i,"spousename"], DBQ[i,"child1name"], \
       DBQ[i,"birthdate"], DBQ[i,"prefix"], DBQ[i,"patrec"] >> file
   }
-  clearDBQ();
+  clearDBQ()
 
   close(file)
   
@@ -338,8 +394,8 @@ function listPatients() {
 }
 
 function lowDrugs() {
-  htmlHeader("Drugs to order");
-  print "<h1>Drugs to order</h1>" ;
+  htmlHeader("Drugs to order")
+  print "<h1>Drugs to order</h1>"
   queryDB("SELECT \
              drugPackage.tradeName, \
              drugManuf.name AS `Manufacturer`, \
@@ -360,15 +416,15 @@ function lowDrugs() {
            LEFT JOIN drugGeneric ON drug.genericID = drugGeneric.id \
            WHERE ((drugPackage.keepStocked > `balance`.`bal`) \
              OR (drugPackage.keepStocked > 0 AND balance.bal IS NULL)) \
-           AND drugPackage.inUse = 'yes' \
-           ORDER BY drugPackage.`tradeName`;");
-  printTable();
-  htmlFooter() ;
+           AND drugPackage.inUse = 'oui' \
+           ORDER BY drugPackage.`tradeName`;")
+  printTable()
+  htmlFooter()
 }
 
 function expDrugs() {
-  htmlHeader("Drugs soon to expire");
-  print "<h1>Drugs soon to expire (within 6 months)</h1>" ;
+  htmlHeader("Drugs soon to expire")
+  print "<h1>Drugs soon to expire (within 6 months)</h1>"
   queryDB("SELECT \
              drugPackage.tradeName, \
              drugManuf.name AS `Manufacturer`, \
@@ -390,15 +446,15 @@ function expDrugs() {
            LEFT JOIN drugGeneric ON drug.genericID = drugGeneric.id \
            WHERE DATEDIFF(`drugPackage`.`oldestExpiry`, NOW()) < 180 \
            AND `balance`.`bal` IS NOT NULL \
-           AND drugPackage.inUse = 'yes' \
-           ORDER BY drugPackage.`tradeName`;");
-  printTable();
-  htmlFooter() ;
+           AND drugPackage.inUse = 'oui' \
+           ORDER BY drugPackage.`tradeName`;")
+  printTable()
+  htmlFooter()
 }
 
 function allDrugs() {
-  htmlHeader("Drugs in stock");
-  print "<h1>Drugs in stock</h1>" ;
+  htmlHeader("Drugs in stock")
+  print "<h1>Drugs in stock</h1>"
   queryDB("SELECT \
              drugPackage.tradeName, \
              drugManuf.name AS `Manufacturer`, \
@@ -417,75 +473,71 @@ function allDrugs() {
            LEFT JOIN drugManuf ON drugManuf.id = drugPackage.manufID \
            LEFT JOIN drug ON drug.id = drugPackage.unitID \
            LEFT JOIN drugGeneric ON drug.genericID = drugGeneric.id \
-           AND drugPackage.inUse = 'yes' \
+           AND drugPackage.inUse = 'oui' \
            WHERE `balance`.`bal` >= 1 \
-           ORDER BY drugPackage.`tradeName`;");
-  printTable();
-  htmlFooter() ;
+           ORDER BY drugPackage.`tradeName`;")
+  printTable()
+  htmlFooter()
 }
 
 function error(msg) {
-  print "<pre>" ;
-  print msg ;
-  print "Exiting. Please return to previous page.";
-  print "</pre>" ;
-  htmlFooter() ;
-  exit;
+  print "<pre>"
+  print msg
+  print "Exiting. Please return to previous page."
+  print "</pre>"
+  htmlFooter()
+  exit
 }
 
 function queryDB( query            , row, i, cmd ) {
-  gsub(/`/,"\\`",query);  # if writing directly, need: \\\`
-  gsub(/\n/," ",query);
-  gsub(/  */," ",query);
+  gsub(/`/,"\\`",query)  # if writing directly, need: \\\`
+  gsub(/\n/," ",query)
+  gsub(/  */," ",query)
   cmd = "/bin/echo -e \"" query "\" | mysql -u " USER " -p" PASS " -h " HOST " -B --column-names --default-character-set=utf8 " DB
-  # print cmd;
-  row = -1;
-  FS = "\t";
-  while ((cmd | getline ) > 0)
-	{
-	  row++;
-	  if (row == 0) 
-		{
-		  DBQc = NF;
-		  for (i = 1; i <= NF; i++)
-			{
-			  DBQf[i] = $i;
-			}
-		}
-	  for (i = 1; i <= NF; i++)
-		{
-		  DBQ[row, DBQf[i]] = $i;
-		}
-	}
-  close(cmd);
-  DBQr = row;
+  # print cmd
+  row = -1
+  FS = "\t"
+  while ((cmd | getline ) > 0) {
+    row++
+    if (row == 0) {
+      DBQc = NF
+      for (i = 1 ; i <= NF;  i++) {
+        DBQf[i] = $i
+      }
+    }
+    for (i = 1; i <= NF; i++) {
+      DBQ[row, DBQf[i]] = $i
+    }
+  }
+  close(cmd)
+  DBQr = row
 }
 
 function clearDBQ() {
 
-  delete DBQ;
-  delete DBQf;
-  DBQr = 0;
-  DBQc = 0;
+  delete DBQ
+  delete DBQf
+  DBQr = 0
+  DBQc = 0
 }
 
 function printTable(       i, j) 
 {
 
-  print "<table>" #  border=\"1\">";
-  print "<tr>";
-  for (i = 1; i <= DBQc; i++) print "<th>" DBQf[i] "</th>";
-  print "</tr>";
+  print "<table>" #  border=\"1\">"
+  print "<tr>"
+  for (i = 1; i <= DBQc; i++) print "<th>" DBQf[i] "</th>"
+  print "</tr>"
   for (i = 1; i <= DBQr; i++)
 	{
-	  print "<tr>";
+	  print "<tr>"
 	  for (j = 1; j <= DBQc; j++)
 		{
-		  print "<td>" DBQ[i,DBQf[j]] "</td>";
+		  print "<td>" DBQ[i,DBQf[j]] "</td>"
 		}
-	   print "</tr>";
+	   print "</tr>"
 	}
-  print "</table>";
+  print "</table>"
 }
 
 # decode urlencoded string
@@ -509,7 +561,7 @@ function urldecode(text,   hex, i, hextab, decoded, len, c, c1, c2, code) {
 	c1 = tolower(substr(text, i+1, 1))
 	c2 = tolower(substr(text, i+2, 1))
 	if ( hextab [c1] != "" || hextab [c2] != "" ) {
-	  # print "Read: %" c1 c2;
+	  # print "Read: %" c1 c2
 	  # Allow: 
 	  # 20 begins main chars, but dissallow 7F (wrong in orig code!)
 	       # tab, newline, formfeed, carriage return
@@ -534,16 +586,16 @@ function urldecode(text,   hex, i, hextab, decoded, len, c, c1, c2, code) {
   }
   
   # change linebreaks to \n
-  gsub(/\r\n/, "\n", decoded);
+  gsub(/\r\n/, "\n", decoded)
   
   # remove last linebreak
-  sub(/[\n\r]*$/,"",decoded);
+  sub(/[\n\r]*$/,"",decoded)
   
   return decoded
 }
 
 function printip() {
-  htmlHeader("IP Nomor");
+  htmlHeader("IP Nomor")
   print "<h1>IP Nomor</h1>"
   while (("ip addr" | getline) > 0)
     if (($1 == "inet") && ($2 !~ /127/))
@@ -563,9 +615,13 @@ function config() {
     if ($0 ~ /^[[:blank:]]*name[[:blank:]]*=/)
       DB = x
   }
+  
   if (!HOST || !USER || !PASS || !DB) {
     print "DB configuration failed" > "/dev/stderr"
     exit 1
   }
 }
         
+function shutdown() {
+  system("sudo shutdown")
+}

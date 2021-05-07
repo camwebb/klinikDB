@@ -4,5 +4,7 @@ Options +ExecCGI
   SetHandler cgi-script
 </Files>
 
-
-
+Session On
+SessionEnv On
+SessionCookieName session path=/
+SessionHeader X-Replace-Session

@@ -12,7 +12,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `userName` (`UserName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN'),(2,'medical','CHANGEME','MEDICAL'),(3,'pharmacy','CHANGEME','PHARMACY');
+INSERT INTO `Users` VALUES (1,'admin','CHANGEME','ADMIN'),(2,'medical','CHANGEME','MEDICAL'),(3,'pharmacy','CHANGEME','PHARMACY');
 
 DROP TABLE IF EXISTS `antenatal`;
 
