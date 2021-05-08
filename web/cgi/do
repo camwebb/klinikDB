@@ -158,12 +158,6 @@ function listSummaries() {
   print "<li><a href=\"do?method=alldrugs\">Drugs in stock</a></li>"
   print "</ul>"
 
-  print "<h2>Backup</h2>"
-  print "<ul>"
-  print "<li><a href=\"do?method=backup\">Make backup file</a></li>"
-  # print "<li><a href=\"do?method=listpat\">Make patient list as CSV</a></li>"
-  print "</ul>"
-
   # print "<h2>Run your own SQL SELECT query</h2>"
   # print "<p>See <a href=\"../img/rel.png\">Entity-Relationship</a> diagram</p>"
   # print "<form method=\"get\" action=\"do\">"
@@ -174,7 +168,10 @@ function listSummaries() {
 
   print "<h2>Manage Raspberry Pi</h2>"
   print "<ul>"
-  # print "<li><a href=\"do?method=ip\">What is my IP?</a></li>"
+  print "<li><a href=\"do?method=backup\">Make backup file</a></li>"
+  # print "<li><a href=\"do?method=listpat\">Make patient list as CSV</a></li>"
+  print "<li><a href=\"do?method=network\">Connect</a> to network to allow remote admin.</li>"
+  print "<li><a href=\"do?method=networkdown\">Disconnect</a> from network.</li>"
   if (ARCH == "ARM")
     print "<li><a href=\"do?method=shutdown\">Shutdown</a></li>"
   print "</ul>"
