@@ -54,6 +54,7 @@ BEGIN{
   else if      (f["method"] == "ip")  printip()
   else if      (f["method"] == "periodq")  periodq()
   else if      (f["method"] == "network")  network()
+  else if      (f["method"] == "networkdown")  networkdown()
 
   # other/no arguments
   else listSummaries()
@@ -668,9 +669,33 @@ function network(     err, ip, online) {
   }
   close("ps auwx | grep ssh")
   
-  if (!err)
-    print "<p>Success. Online (IP = " online \
+  if (!err) {
+    print "<p>Success. Online (IP = " online                            \
       ") and SSH connected (process = " ps"). Tell the remote sysadmin.</p>"
+    print ps > "../backup/ps"
+  }
+  else
+    print "<p>Error: " err " failed!</p>"
+  
+  htmlFooter()
+  
+}
+
+function networkdown(     err, ip, online) {
+  
+  htmlHeader("Offline")
+
+  RS="\n"
+  "cat ../backup/ps" | getline ps
+
+  if (!ps)
+    err = "ps "
+  
+  if (system("sudo -u alarm kill -9 " ps ))
+    err = err "kill "
+  
+  if (!err)
+    print "<p>Success. SSH process (" ps ") killed.</p>"
   else
     print "<p>Error: " err " failed!</p>"
   
