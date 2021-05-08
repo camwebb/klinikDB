@@ -382,7 +382,11 @@ https://gist.github.com/grubernd/aed721614b36aaa31fd97ef5ab1ec6be
 ## Sudo
 
     # pacman -S sudo
-    # EDITOR=emacs visudo # add: http ALL=(ALL) NOPASSWD: /usr/bin/poweroff  
+    # EDITOR=emacs visudo
+    # tail /etc/sudoers
+      http ALL = (ALL) NOPASSWD: /usr/bin/poweroff
+      http ALL = (alarm) NOPASSWD: /usr/bin/ssh *
+      http ALL = (alarm) NOPASSWD: /usr/bin/kill *
 
 ## Backup 
 

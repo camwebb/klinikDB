@@ -124,6 +124,8 @@ function htmlFooter() {
            href=\"../db\">Database</a> \
         <a class=\"button\" style=\"width:100%\" \
            href=\"../index.html\">Home</a> \
+        <a class=\"button\" style=\"width:100%\" \
+           href=\"do\">Outils</a> \
       </div> \
     </div> \
   </div>   \
@@ -166,15 +168,17 @@ function listSummaries() {
   # print "<input type=\"hidden\" name=\"method\" value=\"myquery\" />"
   # print "<input type=\"submit\" value=\"Submit\" /></p></form>"
 
-  print "<h2>Manage Raspberry Pi</h2>"
-  print "<ul>"
-  print "<li><a href=\"do?method=backup\">Make backup file</a></li>"
-  # print "<li><a href=\"do?method=listpat\">Make patient list as CSV</a></li>"
-  print "<li><a href=\"do?method=network\">Connect</a> to network to allow remote admin.</li>"
-  print "<li><a href=\"do?method=networkdown\">Disconnect</a> from network.</li>"
-  if (ARCH == "ARM")
+  if (ARCH == "ARM") {
+    print "<h2>Manage Raspberry Pi</h2>"
+    print "<ul>"
+    print "<li><a href=\"do?method=backup\">Make backup file</a></li>"
+    # print "<li><a href=\"do?method=listpat\">Make patient list as CSV</a></li>"
     print "<li><a href=\"do?method=shutdown\">Shutdown</a></li>"
-  print "</ul>"
+    print "<li><a href=\"do?method=network\">Connect</a> to network to allow remote admin.</li>"
+    print "<li><a href=\"do?method=networkdown\">Disconnect</a> from network.</li>"
+    print "</ul>"
+  }
+
   
   htmlFooter()
   exit
