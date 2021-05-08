@@ -384,7 +384,28 @@ https://gist.github.com/grubernd/aed721614b36aaa31fd97ef5ab1ec6be
     # pacman -S sudo
     # EDITOR=emacs visudo # add: http ALL=(ALL) NOPASSWD: /usr/bin/poweroff  
 
+## Backup 
 
+    $ gpg --gen-key
+    $ gpg --import cw-pub.asc 
+    $ gpg --import hih-pub.asc 
+    $ cp .gnupg/pubring.kbx klinikDB/gnupg
+    $ echo "foo" > test
+    $ gpg -e -a --trust-model always -r cw@camwebb.info \
+      -r gpg@healthinharmony.org --homedir klinikDB/gnupg/ \
+      --no-permission-warning test 
+    $ chmod a+w klinikDB/backup
+
+## Networking to internet
+
+    $ ssh-keygen
+    $ scp .ssh/id_rsa.pub bbbr_remote@phylodiversity.net:.
+    $ ssh bbbr_remote@phylodiversity.net
+    (r)$ mv id_rsa.pub .ssh/authorized_keys 
+    (r)$ logout
+    $ ssh -R 20000:127.0.0.1:22 bbbr_remote@phylodiversity.net # to test
+    
+    
 ----
 
 ## Issues
