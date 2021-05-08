@@ -650,20 +650,27 @@ function network(     err, ip, online) {
         online = ip
     }
   }
+  close("ip addr")
 
   htmlHeader("Online")
 
   if (online) {
-    if (system("sudo -u alarm ssh -R 20000:127.0.0.1:22 "   \
-               "bbbr_remote@phylodiversity.net &"))
+    if (system("sudo -u alarm ssh -fN -R 20000:127.0.0.1:22 "   \
+               "bbbr_remote@phylodiversity.net"))
       err = "ssh"
   }
   else
     err = "IP"
+
+  while (("ps auwx | grep ssh" | getline) > 0) {
+    if ($0 ~ /phylodiversity/)
+      ps = $2
+  }
+  close("ps auwx | grep ssh")
   
   if (!err)
-    print "<p>Success. IP = " online \
-      " and SSH connected. Tell the remote sysadmin.</p>"
+    print "<p>Success. Online (IP = " online \
+      ") and SSH connected (process = " ps"). Tell the remote sysadmin.</p>"
   else
     print "<p>Error: " err " failed!</p>"
   
