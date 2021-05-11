@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+  <title>Using the Raspberry Pi</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="description" content="Small clinic database"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <!--
+  <link href="//fonts.googleapis.com/css?family=Lato:400,300,600" rel="stylesheet" type="text/css"/> < - - originally Raleway - - >
+  -->
+  <link rel="stylesheet" href="../css/normalize.css"/>
+  <link rel="stylesheet" href="../css/skeleton.css"/>
+  <link rel="stylesheet" href="../css/override.css"/>
+  <link rel="icon" type="image/png" href="../img/favicon.ico"/>
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="nine columns" style="margin-top: 5%">
+<h1 id="using-the-raspberry-pi">Using the Raspberry Pi</h1>
+<p>You should have been sent the following:</p>
+<ul>
+<li>2 × Raspberry Pi (RPi) 4B computers, each in a case, and each with a clock module already plugged in to pins 1-10. Open the case/box to check the clock module. If the clock module has come loose during travel, press it back onto pins 1-10 (see <a href="https://wiki.52pi.com/index.php?title=DS1307_RTC_Module_with_BAT_for_Raspberry_Pi_SKU:_EP-0059">here</a>).</li>
+<li>2 × MicroSD cards with operating systems pre-installed, removed for transit</li>
+<li>1 × USB 2/3 (male) to USB-C (male) cable</li>
+<li>1 × 120-240V to 5.5V power supply, with male USB-C plug</li>
+<li>Mini-HDMI (male) to normal HDMI (male) cable</li>
+</ul>
+<p>Gather/purchase the following materials:</p>
+<ul>
+<li>1 × Ethernet cable</li>
+<li>Battery-based phone charger with USB output, as large a capacity as possible (20,000+ mAh)</li>
+</ul>
+<p>Locate but do not yet purchase the following:</p>
+<ul>
+<li>PC keyboard with USB 2/3 plug</li>
+<li>Video monitor (or television) with HDMI input</li>
+</ul>
+<p>The PC keyboard and monitor may not be needed - they are for troubleshooting only.</p>
+<p>The second Raspberry Pi and MicroSD card are spares, and should be kept somewhere safe and dry until needed.</p>
+<h2 id="first-usage">First usage</h2>
+<p>For the first usage:</p>
+<ul>
+<li>Locate an internet router (see “Connecting to the internet”, below)</li>
+<li>Contact Cam and begin a video call</li>
+<li>Insert the MicroSD card into the slot on the bottom of the RPi (match MicroSD ‘MAN 1’ to RPi ‘Manombo 1’). If the unit is held upside down, the side of the card with writing on it should be <em>up</em>.</li>
+<li>Start up the Raspberry Pi as in ‘Daily usage’ below.</li>
+<li>Test to see if you can connect a laptop (or tablet or phone) to the RPi’s wifi, and see the main page, and log in to the database.</li>
+</ul>
+<p>There is no patient data in the database (for security during transit), and it must now be loaded. So connect to the internet, as below, and Cam will install the current patient data. At this point Cam will also disable editing of the online database, <strong>switching the database ‘master copy’ to the RPi</strong>.</p>
+<h2 id="daily-usage">Daily usage</h2>
+<p>Start-up:</p>
+<ul>
+<li>Switch the unit on by plugging in the USB cable. <strong>Note</strong> if the mains electrical power might be interrupted, always run the Raspberry Pi either 1) using a UPS (Uninterrupted Power Supply; 120-240 V) and the Raspberry Pi power supply, or 2) plugged into a battery phone charger, which in turn is plugged into a power supply. It is very important that the power to the Raspberry Pi is not interrupted.</li>
+<li>Look through the vertical slot to the right of the MicroSD cad slow. There is a red power light that only indicates if the power is connected, and a green light that indicates CPU activity. On start-up, the green light will flicker for a few seconds, then be unlit for a few seconds, then begin a continuous double flash (flash-flash, pause, flash-flash, pause), like a heartbeat. This is the signal of normal operation.</li>
+<li>Wait at least 1½ minutes before trying to connect.</li>
+<li>On your own device (computer, tablet or phone), search for wifi signal. You should see SSID ‘klinikdb’: attempt to connect. There is no password needed. If you see your device reporting “waiting for IP...” or something similar, wait a little longer and try again. Once connected, your device will be given an IP in the range 10.0.0.2 to 10.0.0.20.</li>
+<li>Go to your browser and type the address <code>http://10.0.0.1/</code> into the address bar. You will be asked for a username and password, which you should have been given.</li>
+<li>The static information pages should display.</li>
+</ul>
+<p>Database and tools:</p>
+<ul>
+<li>Click the “database” button, and you will be asked to log in to the database. This is <em>different</em> username/password combination, which you should have been given. The database should now be accessible. Depending on the ‘role’ of the user, you will see and be able to edit different tables.</li>
+<li>To use the reporting tools and device management tools, you must log in again with your database username and password. Only ADMIN users may see these tools.</li>
+</ul>
+<p>Shutdown:</p>
+<ul>
+<li>It is <strong>vital</strong> that the RPi is not unplugged without running a safe shutdown. Data may be lost if the power is unexpectedly interrupted. To shut down, click on ‘Tools’ and locate the ‘Shutdown’ link. Click this and watch the indicator lights. After a few seconds the ‘heartbeat’ of the green light will change to steady blinking, then flickering, then go out. The red light will remain lit as long as power is connected. <strong>When the green light is no longer lit, is is safe to disconnect the power</strong>.</li>
+<li>Note that you must be logged into the RPi website (above) to trigger a shutdown. Do not let anyone play with the device who does not know the username/password, as they will be unable to safely switch off the RPi if they happen to plug in the power. You do not need to have ADMIN access to shut the RPi down; the ‘Shutdown’ link appears on the ‘Tools’ page for every user.</li>
+</ul>
+<h2 id="backing-up">Backing up</h2>
+<p>It is <strong>vital</strong> to backup the database often: ideally after every major data entry session, and at a minimum once a week. If the power is interrupted, the RPi may fail. This backup process creates an encrypted backup with a timestamp in the file name. These are safe to store on any computer or flashdrive. It is <strong>strongly recommended</strong> that a copy of the backup is made at least once a week on a flash disk which is stored (and hidden) at a different location from either the RPi or the laptop which downloaded the backup. In this way if the laptop or the RPi are damaged or stolen a recent backup will still exist. At least once every month a copy of the backup should be emailed to Cam Webb.</p>
+<p>The data can only (currently) be decrypted by Cam Webb and someone at Health in Harmony. In the event of a loss of the main RPi data and a switch to backup hardware, Cam will install the latest database backup onto the new RPi.</p>
+<p>Backup procedure:</p>
+<ul>
+<li>Log in as a user (with ADMIN role) to the ‘Tools’ section</li>
+<li>Click on the ‘Make backup file’ link.</li>
+<li>In the next page you will get a ‘success’ indication and a link for the backup file.</li>
+<li>Click on the link, and download (save) the file to your own computer/phone. The name of the file will be something like <code>20210508-0727_manombo.sql.gz.asc</code>, where <code>20210508-0727</code> is the time of backup (in local timezone), e.g., 8 May 2021 and 7:27 AM.</li>
+</ul>
+<h2 id="connecting-to-the-internet">Connecting to the internet</h2>
+<p>In order to update software and manage the database, Cam will need access to the RPi. Even though it is on the other side of the world, a secure connection (SSH tunnel) can be made, if the connection is initiated by the RPi user. Before connecting, make an arrangement with Cam. It will usually be helpful to also have a video call running at the same time.</p>
+<ul>
+<li>Locate a standard wifi router that is connected to the internet (usually by ADSL, maybe by cable or optical fiber), and which also has ethernet ports on the back. Usually there is no MAC filtering set in the Router and all ethernet connections are accepted. If there <em>has</em> been MAC security set, the RPi MAC address must be allowed via the router’s admin panel.</li>
+<li>Connect the RPi to the router with an ethernet cable.</li>
+<li>In the Tools section, click “Connect to network”.</li>
+<li>If the connection is established, a new status page will show “Success” and the IP number of the RPi’s ethernet port.</li>
+<li>If the connection is not established, an error will show. Cam will attempt to troubleshoot the connection.</li>
+</ul>
+<p>To disconnect:</p>
+<ul>
+<li>Click the “Disconnect” link.</li>
+<li>The ethernet cable is now safe to unplug.</li>
+</ul>
+      </div>
+      <div class="three columns" style="margin-top: 5%">
+        <a class="button" style="width:100%"
+           href="../">Home</a><br/>
+        <a class="button" style="width:100%"
+           href="../db/">Database</a><br/>
+        <a class="button" style="width:100%"
+           href="../pages/">Documentation</a><br/>
+        <a class="button" style="width:100%"
+           href="../cgi/do">Tools</a><br/>
+        <img style="width:90%;padding-left:5%;padding-top:10%;" src="../img/asri.jpg" alt="menu picture"/>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
