@@ -62,3 +62,9 @@ sample workflow might include:
  Basic Data, for new patients) to the database. See [here](entry.html)
  for a guide to working with the database.
 
+Conditions at
+[Manombo](https://healthinharmony.org/rainforests-and-communities/#h-manombo-special-reserve),
+Madagascar are even more challenging. Matching patients on field
+visits to existing records is harder, due to a general lack of
+knowledge of birthdate.  We designed a single paper form for recording
+information for post-hoc matching to existing records.

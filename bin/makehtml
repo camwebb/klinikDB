@@ -8,14 +8,14 @@ then
     if [ $1 = "INDEX.md" ]
     then
         echo "  "${1/md/html}
-        pandoc -s --template=template_fr.html -f markdown-smart \
+        pandoc -s --template=template.html -f markdown-smart \
                -o ../web/index.html $1
         sed -i 's|"../|"./|g' ../web/index.html
         # check
         tidy -e ../web/index.html 2>&1 >/dev/null | grep errors
     else
         echo "  "${1/md/html}
-        pandoc -s --template=template_fr.html -f markdown-smart \
+        pandoc -s --template=template.html -f markdown-smart \
                -o ../web/pages/${1/md/html} $1
         # check
         tidy -e ../web/pages/${1/md/html} 2>&1 >/dev/null | grep errors
@@ -26,7 +26,7 @@ else
     for i in [a-z0-9]*.md
     do
         echo "  "${i/md/html}
-        pandoc -s --template=template_fr.html -f markdown-smart \
+        pandoc -s --template=template.html -f markdown-smart \
                -o ../web/pages/${i/md/html} $i
     done
 fi
