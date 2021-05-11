@@ -100,9 +100,9 @@ First we need to set a static IP for `wlan0`. The direct, CLI way is:
 `ip link set wlan0 down ; ip addr flush dev wlan0 ; ip link set wlan0
 up ; ip addr add 10.0.0.1/24 dev wlan0`, but this can more easily be
 done in `systemd`, which is started by default on Arch, and which sets
-`eth0` to connect via DHCP. 
+`eth0` to connect via DHCP.
 
-    emacs /etc/systemd/network/wlan0.network`
+    emacs /etc/systemd/network/wlan0.network
 
       [Match]
       Name=wlan0
@@ -110,11 +110,13 @@ done in `systemd`, which is started by default on Arch, and which sets
       [Network]
       Address=10.0.0.1/24
 
-Restart the service with: `systemctl restart systemd-networkd` and
-check the IP of `wlan0`: it should say: `inet 10.0.0.1/24`. The new
-configuration will be initialized at startup.
+Restart the service with: `systemctl restart systemd-networkd`. The
+new configuration will be initialized at startup.  Note that until
+there is something using the interface, `ip addr` will not show an IP,
+and `networkctl` will show wlan0 as “configuring”. Once `hostapd` is
+running (below). `ip addr` should then say: `inet 10.0.0.1/24`.
 
-Now we need an access point, with security. 
+Now we need an access point.
 
     emacs /etc/hostapd/hostapd.conf
 
@@ -151,8 +153,10 @@ Start, and enable the new services at start-up:
     systemctl start dhcpd4
     systemctl enable dhcpd4
 
-Reboot the system to see if you can connect. If it is failing, you can
-always connect the RPi via ethernet and SSH in that way.
+Reboot the system to see if you can connect. Note that it can
+sometimes take 2 mins for the DCHP server to begin to listen. If it is
+failing, you can always connect the RPi via ethernet and SSH in that
+way.
 
 ## Hardware clock
 
@@ -161,7 +165,7 @@ NTP to set the time at each boot. If the RPi will often be running off
 the ‘net, then a battery clock module is needed. I bought a DS1307 RTC
 Board (USD 3.95 at pishop.us).
 
-Testing (not for permanent installation):
+First time:
 
     emacs /boot/config.txt     # add dtparam=i2c_arm=on
     pacman -S i2c-tools
@@ -175,7 +179,8 @@ Testing (not for permanent installation):
     echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
     dmesg | grep rtc
     
-    timedatectl     
+    timedatectl
+    timedatectl set-ntp 0
     hwclock --show   # error until set
     hwclock --set --date "2021-03-16 15:42:00 +0"
     hwclock --show  
@@ -225,7 +230,7 @@ See online posts [1][8], [2][9], [3][10].
 
     pacman -S mariadb
     mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
-    systemctl start mysql
+    systemctl start mysqld
     systemctl enable mysqld
     mysql_secure_installation    # set a root password, all else default (Y)
     
@@ -243,11 +248,11 @@ Get and load klinikDB:
     su alarm
     cd ~
     git clone https://github.com/camwebb/klinikDB.git
-    mysql -u pi -p klinikdb < /home/alarm/klinikDB/sql/klinikDB.sql
+    mysql -u pi -p klinikdb < /home/alarm/klinikDB/sql/klinikDB_fr.sql
 
 ## Web server
 
-    pacman -S apache
+    pacman -S apache php7 php7-apache
     emacs /etc/httpd/conf/httpd.conf 
     
 Make these changes to `/etc/httpd/conf/httpd.conf` (`diff` formatted):
@@ -257,6 +262,12 @@ Make these changes to `/etc/httpd/conf/httpd.conf` (`diff` formatted):
       ---
       > #LoadModule mpm_event_module modules/mod_mpm_event.so
       > LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
+
+      < #LoadModule session_module modules/mod_session.so
+      < #LoadModule session_cookie_module modules/mod_session_cookie.so
+      ---
+      > LoadModule session_module modules/mod_session.so
+      > LoadModule session_cookie_module modules/mod_session_cookie.so
 
       < #LoadModule cgi_module modules/mod_cgi.so
       ---
@@ -293,6 +304,9 @@ Save, and:
 Use `journalctl` or `systemctl status httpd` to check that it started.
     
     chmod a+rx /home/alarm/
+    su alarm
+    cd /klinikDB/web/
+    cp .htaccess_template .htaccess
 
 Test from inside:
 
@@ -306,12 +320,13 @@ Test from outside, in a browser (or curl):
 
 should give the same.
 
+
+
 ## PHP
 
 PHP is needed for Xataface, the framework that drives the GUI for the
 database.
 
-   pacman -S php7 php7-apache
    emacs /etc/php7/php.ini 
 
       < ;extension=mysqli.so
@@ -329,6 +344,8 @@ database.
     systemctl restart httpd
 
 ## KlinikDB database
+
+As alarm:
 
     cd ~/klinikDB/web/db/
     cp conf_template.ini conf.ini   #_
@@ -362,9 +379,6 @@ System shutdown:
     pacman -S sudo
     EDITOR=emacs visudo  # Add: http ALL = (ALL) NOPASSWD: /usr/bin/poweroff
 
-      http ALL = (alarm) NOPASSWD: /usr/bin/ssh *
-      http ALL = (alarm) NOPASSWD: /usr/bin/kill *
-
 Backup as encryped file:
 
     pacman -S gnupg
@@ -377,7 +391,7 @@ Backup as encryped file:
     gpg -e -a --trust-model always -r cw@camwebb.info \
       -r gpg@healthinharmony.org --homedir klinikDB/gnupg/ \
       --no-permission-warning test 
-    chmod a+w klinikDB/backup
+    chmod a+w klinikDB/web/backup
 
 Networking to the internet for remote access:
 
@@ -386,15 +400,40 @@ Networking to the internet for remote access:
                          #      http ALL = (alarm) NOPASSWD: /usr/bin/kill *
     su alarm
     ssh-keygen
-    scp .ssh/id_rsa.pub bbbr_remote@phylodiversity.net:.
+    scp .ssh/id_rsa.pub bbbr_remote@phylodiversity.net:.ssh/authorized_keys/.
     ssh bbbr_remote@phylodiversity.net
-    remote$ mv id_rsa.pub .ssh/authorized_keys 
+    remote$ cat id_rsa.pub >> .ssh/authorized_keys 
     remote$ logout
     ssh -R 20000:127.0.0.1:22 bbbr_remote@phylodiversity.net # to test
 
 ## Change passwords    
 
-Now the system is set up, change the default root and alarm passwords.
+Now the system is set up, change the default root and alarm
+passwords. Set timezone to destination for box (Africa).
+
+Finally add a password to the front page. Uncomment these lines in
+`web/.htaccess`:
+
+    <FilesMatch "^\.pw$">
+    Deny from all
+    </FilesMatch>
+    AuthType Basic
+    AuthName "Password Protected"
+    AuthUserFile /home/alarm/klinikDB/web/.pw
+    Require valid-user
+
+Then, as user `alarm`, set password and username with:
+
+    cd ~/klinikDB/web
+    htpasswd -c .pw <username>
+
+The passwords which are now set, and which should be recorded and
+shared as needed, are:
+
+ * Shell: alarm, root
+ * MariaDB: pi, root
+ * Gnupg
+ * `http://localhost/.htaccess`
 
 ----
 

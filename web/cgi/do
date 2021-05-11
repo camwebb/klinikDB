@@ -71,6 +71,10 @@ function login() {
   print "User: <input type=\"text\" name=\"user\" size=\"12\"/> "
   print "Password: <input type=\"text\" name=\"pw\" size=\"12\"/>"
   print "<input type=\"submit\" value=\"Submit\" /></p>"
+
+  if (ARCH == "ARM")
+    print "<p><a href=\"do?method=shutdown\">Shutdown</a> Raspberry Pi</p>"
+
   htmlFooter()
 
 }
