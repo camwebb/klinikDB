@@ -10,7 +10,9 @@ You should have been sent the following:
    during travel, press it back onto pins 1-10 (see [here][1]).
  * 2 × MicroSD cards with operating systems pre-installed, removed for
    transit
- * 1 × USB 2/3 (male) to USB-C (male) cable
+ * 1 × MicroSD empty card (for burning an OS disk image at some later date)
+   transit
+ * 2 × USB 2/3 (male) to USB-C (male) cables
  * 1 × 120-240V to 5.5V power supply, with male USB-C plug
  * Mini-HDMI (male) to normal HDMI (male) cable
 

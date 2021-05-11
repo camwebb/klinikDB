@@ -66,5 +66,6 @@ Conditions at
 [Manombo](https://healthinharmony.org/rainforests-and-communities/#h-manombo-special-reserve),
 Madagascar are even more challenging. Matching patients on field
 visits to existing records is harder, due to a general lack of
-knowledge of birthdate.  We designed a single paper form for recording
-information for post-hoc matching to existing records.
+knowledge of birthdate.  We designed a single paper
+[form](../files/field_form.pdf) for recording information for post-hoc
+matching to existing records.
