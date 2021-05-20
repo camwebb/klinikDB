@@ -49,6 +49,7 @@ BEGIN{
   else if      (f["method"] == "lowdrugs")  lowDrugs()
   else if      (f["method"] == "expdrugs")  expDrugs()
   else if      (f["method"] == "alldrugs")  allDrugs()
+  else if      (f["method"] == "debts")  debts()
   # else if      (f["method"] == "myquery")  myQuery()
   else if      (f["method"] == "backup")  backup()
   else if      (f["method"] == "ip")  printip()
@@ -149,6 +150,8 @@ function listSummaries() {
   print "<ul>"
   print "<li><a href=\"do?method=totpat\">Total number of patients, etc</a>"\
     "</li>"
+  print "<li><a href=\"do?method=debts\">Debts</a>"\
+    "</li>"
   
   print "<li>Data summaries: "
   print "from <input type=\"text\" name=\"from\" size=\"12\" value=\"2020-01-01\"/>, "
@@ -194,120 +197,127 @@ function periodq(     sql)
   print "<h1>Time period summaries</h1>"
   print "<p><b>From " f["from"] " to " f["to"] "</b></p>"
 
-  sql = "SELECT klinik AS 'Klink', COUNT(*) AS 'Total visits' \
-         FROM visit \
-         WHERE visit.date >= '" f["from"] "' \
-         AND visit.date < '" f["to"] "' \
-         AND amount > 0 \
-         GROUP BY klinik;"
-  queryDB(sql)
-  print "<p>1. Total visits by klinik, during period:</p>"
-  print "<div style=\"margin-left:50px;\">"
-  printTable()
-  print "</div>"
-  clearDBQ()
-
-  # sql = "SELECT dusun.dusun AS 'Dusun', COUNT(*) AS 'Visits' \
-  #        FROM visit , patient, dusun \
-  #        WHERE visit.patientID = patient.id AND patient.dusunID = dusun.id \
-  #        AND visit.date >= '" f["from"] "' \
-  #        AND visit.date < '" f["to"] "' \
-  #        AND visit.klinik = 'Mobile' \
-  #        AND amount > 0 \
-  #        GROUP BY dusun.dusun \
-  #        ORDER BY dusun.dusun;"
-  # queryDB(sql)
-  # print "<p>2. Visits to mobile clinic, by home dusun of paptient, during period:</p>"
-  # print "<div style=\"margin-left:50px;\">"
-  # printTable()
-  # print "</div>"
-  # clearDBQ()
-
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
-    SELECT DISTINCT patient.id FROM patient, visit \
-    WHERE visit.patientID = patient.id \
-    AND visit.date >= '" f["from"] "' \
-    AND visit.date < '" f["to"] "' \
-    AND amount > 0 \
-  ) AS A;"
+    SELECT DISTINCT patientID FROM general      \
+    WHERE general.date >= '" f["from"] "'         \
+    AND general.date <= '" f["to"] "') AS A;"
   queryDB(sql)
-  print "<p>3. Total patients during period is: <b>" DBQ[1,"T"] "</b></p>"
+  print "<p>1. Total patients during period is: <b>" DBQ[1,"T"] "</b></p>"
   clearDBQ()
 
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
-    SELECT DISTINCT patient.id FROM patient LEFT JOIN ( \
-      SELECT patientID , MIN(`date`) AS EARLIEST FROM visit \
-      WHERE amount > 0 \
+    SELECT DISTINCT patientID FROM ( \
+      SELECT patientID , MIN(`date`) AS EARLIEST FROM general \
       GROUP BY patientID ) AS V \
-    ON V.patientID = patient.id \
     WHERE V.EARLIEST >= '" f["from"] "' \
     AND V.EARLIEST   <= '" f["to"]   "' \
   ) AS A;"
   queryDB(sql)
-  print "<p>4. Total new patients during period is: <b>" DBQ[1,"T"] "</b></p>"
+  print "<p>2. Total new patients during period is: <b>" DBQ[1,"T"] "</b></p>"
+  clearDBQ()
+
+  sql = "SELECT COUNT(*) AS 'T' FROM general \
+         WHERE date >= '" f["from"] "' \
+         AND date   <= '" f["to"]   "' \
+         AND refer = 1;"
+  queryDB(sql)
+  print "<p>3. Number of referrals during period is: <b>" DBQ[1,"T"] "</b></p>"
   clearDBQ()
 
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
-      SELECT DISTINCT patient.id FROM patient, visit \
-      WHERE visit.patientID = patient.id \
-      AND visit.date >= '" f["from"] "' \
-      AND visit.date < '" f["to"] "' \
-      AND amount > 0 \
+      SELECT DISTINCT patient.id FROM patient, general \
+      WHERE general.patientID = patient.id \
+      AND general.date >= '" f["from"] "' \
+      AND general.date <= '" f["to"] "' \
       AND birthdate != '1899-12-31' \
-      AND (to_days(date(now())) - to_days(birthdate)0) < (5 * 365) \
+      AND (to_days('" f["to"] "') - to_days(birthdate)) < (5 * 365) \
     ) AS A;"
   queryDB(sql)
-  print "<p>5. Total patients < 5 years during period is: <b>" DBQ[1,"T"] \
+  print "<p>4. Total patients < 5 years during period is: <b>" DBQ[1,"T"] \
     "</b></p>"
   clearDBQ()
 
   sql = "SELECT COUNT(*) AS 'T' FROM ( \
-      SELECT DISTINCT patient.id FROM patient, visit \
-      WHERE visit.patientID = patient.id \
-      AND visit.date >= '" f["from"] "' \
-      AND visit.date < '" f["to"] "' \
-      AND amount > 0 \
+      SELECT DISTINCT patient.id FROM patient, general \
+      WHERE general.patientID = patient.id \
+      AND general.date >= '" f["from"] "' \
+      AND general.date <= '" f["to"] "' \
       AND birthdate != '1899-12-31' \
-      AND (to_days(date(now())) - to_days(birthdate)) > (65 * 365) \
+      AND (to_days('" f["to"] "') - to_days(birthdate)) > (65 * 365) \
     ) AS A;"
   queryDB(sql)
-  print "<p>6. Total patients > 65 years during period is: <b>" DBQ[1,"T"] \
+  print "<p>5. Total patients > 65 years during period is: <b>" DBQ[1,"T"] \
     "</b></p>"
   clearDBQ()
 
-  sql = "SELECT dusun.dusun AS Dusun, COUNT(*) AS 'Patients' FROM ( \
-    SELECT DISTINCT patient.id , patient.dusunID FROM patient, visit \
-    WHERE visit.patientID = patient.id \
-    AND visit.date >= '" f["from"] "' \
-    AND visit.date < '" f["to"] "' \
-    AND amount > 0 \
+  sql = "SELECT COUNT(*) AS T FROM general \
+    WHERE date >= '" f["from"] "' \
+    AND   date <= '" f["to"]   "';"
+  queryDB(sql)
+  print "<p>6. Total visits during period is: <b>" DBQ[1,"T"] "</b></p>"
+  clearDBQ()
+
+  sql = "SELECT 'Antenatal' AS 'type', COUNT(*) AS 'number' FROM antenatal    \
+         WHERE date >= '" f["from"] "'                                  \
+         AND   date <= '" f["to"] "' \
+         UNION \
+         SELECT 'Family planning' AS 'type', COUNT(*) AS 'number' FROM fp \
+         WHERE date >= '" f["from"] "'                                  \
+         AND   date <= '" f["to"] "'                                    \
+         UNION \
+         SELECT 'General' AS 'type', COUNT(*) AS 'number' FROM general \
+           LEFT JOIN antenatal ON general.patientID = antenatal.patientID \
+                              AND general.date = antenatal.date \
+           LEFT JOIN fp ON general.patientID = fp.patientID \
+                        AND general.date = fp.date \
+           LEFT JOIN vaxShot ON general.patientID = vaxShot.patientID \
+                        AND general.date = vaxShot.date \
+         WHERE antenatal.id IS NULL \
+         AND fp.id IS NULL \
+         AND vaxShot.id is NULL                              \
+         AND general.date >= '" f["from"] "'                                  \
+         AND general.date <= '" f["to"] "'                                    \
+         UNION \
+         SELECT 'Vaccination' AS 'type', COUNT(*) AS 'number' FROM vaxShot  \
+         WHERE date >= '" f["from"] "'                                  \
+         AND   date <= '" f["to"] "';"
+  queryDB(sql)
+  print "<p>7. Visit types:</p>"
+  print "<div style=\"margin-left:50px;\">"
+  printTable()
+  print "</div>"
+  clearDBQ()
+
+  sql = "SELECT CONCAT_WS(' / ', dusun, sous) AS 'location', COUNT(*) AS 'visits' \
+         FROM general, dusun \
+         WHERE general.date >= '" f["from"] "' \
+         AND general.date <= '" f["to"] "' \
+         AND general.dusunID = dusun.id \
+         GROUP BY dusun, sous;"
+  queryDB(sql)
+  print "<p>8. Total visits by clinic location, during period:</p>"
+  print "<div style=\"margin-left:50px;\">"
+  printTable()
+  print "</div>"
+  clearDBQ()
+
+  sql = "SELECT CONCAT_WS(' / ', dusun.dusun, dusun.sous) AS Village, COUNT(*) AS 'Patients' FROM ( \
+    SELECT DISTINCT patient.id , patient.dusunID FROM patient, general \
+    WHERE general.patientID = patient.id \
+    AND general.date >= '" f["from"] "' \
+    AND general.date <= '" f["to"] "' \
   ) AS A \
   LEFT JOIN dusun ON A.dusunID = dusun.id \
   GROUP BY dusun.id \
-  ORDER BY dusun.dusun;"
+  ORDER BY dusun.dusun, dusun.sous;"
   queryDB(sql)
-  print "<p>7. Total patients served, by home village, during period:</p>"
+  print "<p>9. Total patients served, by home village, during period:</p>"
   print "<div style=\"margin-left:50px;\">"
   printTable()
   print "</div>"
   clearDBQ()
 
-  sql = "SELECT visitType.label AS 'Visit type', COUNT(*) AS 'Number of visits'\
-    FROM visit, visitType \
-    WHERE visit.visitTypeID = visitType.id \
-    AND visit.date >= '" f["from"] "' \
-    AND visit.date < '" f["to"] "' \
-    AND amount > 0 \
-    GROUP BY visitType.label \
-    ORDER BY visitType.label;"
-  queryDB(sql)
-  print "<p>8. Visit types:</p>"
-  print "<div style=\"margin-left:50px;\">"
-  printTable()
-  print "</div>"
-  clearDBQ()
-
-  sql = "SELECT icd10.code, icd10.name AS 'Diagnosis', COUNT(*) AS 'Patient-cases' FROM ( \
+  sql = "SELECT icd10.code, icd10.name AS 'diagnosis', COUNT(*) AS 'patient-cases' FROM ( \
     SELECT DISTINCT patientID , icd10ID FROM diagnoses \
     WHERE date >= '" f["from"] "' \
     AND date < '" f["to"] "' \
@@ -316,7 +326,7 @@ function periodq(     sql)
   ORDER by COUNT(*) DESC, icd10.name \
   LIMIT 25;"
   queryDB(sql)
-  print "<p>9. Diagnoses (top 25):</p>"
+  print "<p>10. Diagnoses (top 25):</p>"
   print "<div style=\"margin-left:50px;\">"
   printTable()
   print "</div>"
@@ -365,12 +375,22 @@ function totalPatients() {
   htmlHeader("Total patients")
   print "<h1>Total patients</h1>"
   queryDB("SELECT COUNT(*) AS tot FROM patient;")
-  print "<p>Total patients in DB is: " DBQ[1,"tot"] "</p>"
+  print "<p>Total patients in DB is: <b>" DBQ[1,"tot"] "</b></p>"
   
   clearDBQ()
 
-  queryDB("SELECT COUNT(*) AS tot FROM (SELECT patientID, `date` FROM visit GROUP BY patientID, `date`) AS alllines;")
-  print "<p>The total number of visits (distinct person visits per day) is: " DBQ[1,"tot"] "</p>"
+  queryDB("SELECT COUNT(*) AS tot FROM general;")
+  print "<p>The total number of visits (distinct person visits per day; = total 'General' records) is: <b>" DBQ[1,"tot"] "</b></p>"
+  clearDBQ()
+  htmlFooter()
+}
+
+function debts() {
+  htmlHeader("Patients with debts")
+  print "<h1>Patients with debts</h1>"
+  queryDB("SELECT patient.patrec as NDM, patient.name AS Nom, CONCAT_WS(' ', dusun, '/', sous) AS Village, debt AS 'Dette (Ar.)' FROM patient LEFT JOIN dusun ON patient.dusunID = dusun.id LEFT JOIN (SELECT patientID, SUM( `amount` ) as debt FROM `visit` GROUP BY patientID) as A ON patient.id = A.patientID where A.debt > 0 ORDER BY dusun, sous, patrec;")
+  printTable()
+  clearDBQ()
   htmlFooter()
 }
 
