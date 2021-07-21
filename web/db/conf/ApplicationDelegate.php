@@ -66,6 +66,30 @@ class conf_ApplicationDelegate {
                 if ($query['-table'] == 'patient')
                     $query['-table'] = 'drug';
             }
+            if ($user->val('Role') == 'CONS') {
+                // Remove tables from NavMenu
+                unset($app->_conf['_tables']['visit']);
+                unset($app->_conf['_tables']['visitType']);
+                unset($app->_conf['_tables']['diagnoses']);
+                unset($app->_conf['_tables']['doc']);
+                unset($app->_conf['_tables']['drug']);
+                unset($app->_conf['_tables']['drugPackage']);
+                unset($app->_conf['_tables']['drugSuppl']);
+                unset($app->_conf['_tables']['icd10']);
+                unset($app->_conf['_tables']['drugDispense']);
+                unset($app->_conf['_tables']['Users']);
+                // This role cannot access the tables from browser
+                $app->_conf['_disallowed_tables']['hide2'] = 'visit';
+                $app->_conf['_disallowed_tables']['hide3'] = 'visitType';
+                $app->_conf['_disallowed_tables']['hide4'] = 'diagnoses';
+                $app->_conf['_disallowed_tables']['hide5'] = 'doc';
+                $app->_conf['_disallowed_tables']['hide6'] = 'drug';
+                $app->_conf['_disallowed_tables']['hide7'] = 'drugPackage';
+                $app->_conf['_disallowed_tables']['hide8'] = 'drugSuppl';
+                $app->_conf['_disallowed_tables']['hide9'] = 'icd10';
+                $app->_conf['_disallowed_tables']['hide10'] = 'Users';
+                $app->_conf['_disallowed_tables']['hide11'] = 'drugDispense';
+            }
             // Else, for ADMIN, see all
         }
     
