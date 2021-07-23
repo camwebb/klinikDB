@@ -24,17 +24,33 @@ class conf_ApplicationDelegate {
                 //   standard menu, so need to make own menu) 
                 unset($app->_conf['_tables']['Users']);
                 unset($app->_conf['_tables']['dusun']);
+
+                unset($app->_conf['_tables']['training']);
+                unset($app->_conf['_tables']['crop']);
+                unset($app->_conf['_tables']['plot']);
+                unset($app->_conf['_tables']['period']);
+                unset($app->_conf['_tables']['planting']);
+                
                 // This role cannot access the tables from browser
                 $app->_conf['_disallowed_tables']['hide1'] = 'doc';
                 $app->_conf['_disallowed_tables']['hide2'] = 'Users';
                 $app->_conf['_disallowed_tables']['hide3'] = 'icd10';
                 $app->_conf['_disallowed_tables']['hide4'] = 'visitType';
                 $app->_conf['_disallowed_tables']['hide5'] = 'dusun';
+                
+                $app->_conf['_disallowed_tables']['hide6'] = 'training';
+                $app->_conf['_disallowed_tables']['hide7'] = 'trainingParticipant';
+                $app->_conf['_disallowed_tables']['hide8'] = 'crop';
+                $app->_conf['_disallowed_tables']['hide9'] = 'plot';
+                $app->_conf['_disallowed_tables']['hide10'] = 'period';
+                $app->_conf['_disallowed_tables']['hide11'] = 'monitoring';
+                $app->_conf['_disallowed_tables']['hide12'] = 'planting';
+                
                 // Add these to lock the pharmacy stock tables from docs/entry
                 unset($app->_conf['_tables']['drugPackage']);
                 unset($app->_conf['_tables']['drugSuppl']);
-                $app->_conf['_disallowed_tables']['hide6'] = 'drugPackage';
-                $app->_conf['_disallowed_tables']['hide7'] = 'drugSuppl';
+                $app->_conf['_disallowed_tables']['hide13'] = 'drugPackage';
+                $app->_conf['_disallowed_tables']['hide14'] = 'drugSuppl';
                 // not working, always 'patient' from conf.ini
                 // $app->_conf['default_table'] = 'patient';
             }
@@ -49,6 +65,13 @@ class conf_ApplicationDelegate {
                 unset($app->_conf['_tables']['dusun']);
                 unset($app->_conf['_tables']['drugDispense']);
                 unset($app->_conf['_tables']['Users']);
+
+                unset($app->_conf['_tables']['training']);
+                unset($app->_conf['_tables']['crop']);
+                unset($app->_conf['_tables']['plot']);
+                unset($app->_conf['_tables']['period']);
+                unset($app->_conf['_tables']['planting']);
+
                 // This role cannot access the tables from browser
                 $app->_conf['_disallowed_tables']['hide1'] = 'patient';
                 $app->_conf['_disallowed_tables']['hide2'] = 'visit';
@@ -58,11 +81,21 @@ class conf_ApplicationDelegate {
                 $app->_conf['_disallowed_tables']['hide6'] = 'icd10';
                 $app->_conf['_disallowed_tables']['hide7'] = 'Users';
                 $app->_conf['_disallowed_tables']['hide8'] = 'dusun';
+
+                $app->_conf['_disallowed_tables']['hide10'] = 'training';
+                $app->_conf['_disallowed_tables']['hide11'] = 'trainingParticipant';
+                $app->_conf['_disallowed_tables']['hide12'] = 'crop';
+                $app->_conf['_disallowed_tables']['hide13'] = 'plot';
+                $app->_conf['_disallowed_tables']['hide14'] = 'period';
+                $app->_conf['_disallowed_tables']['hide15'] = 'monitoring';
+                $app->_conf['_disallowed_tables']['hide16'] = 'planting';
+
                 // Note: the following does not prevent access to
                 //  related_records. Some table-level delegate class permission
                 //  will be required.
+                //  See: http://xataface.com/wiki/Relationship_Permissions
                 $app->_conf['_disallowed_tables']['hide9'] = 'drugDispense';
-                // fix
+                // fix default page
                 if ($query['-table'] == 'patient')
                     $query['-table'] = 'drug';
             }
