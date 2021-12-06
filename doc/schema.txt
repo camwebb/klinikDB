@@ -1,0 +1,10 @@
+antenatal||
+The antenatal info
+
+antenatal|G|
+The number of gestations
+
+antenatal|P|
+The number of paritas ...
+
+

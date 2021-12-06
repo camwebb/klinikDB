@@ -1,0 +1,22 @@
+#!/bin/sh
+
+echo 'SET FOREIGN_KEY_CHECKS=0;'
+cat $1 | \
+    gawk '{if ($0 ~ /^.*`dataface.*/) {if ($0 !~ /;/) off=1} else if (off && ($0 ~ /;/)) off=0; else if (!off) {print $0}}' | \
+    sed -E \
+        -e 's/^SET character_set.*//g' \
+        -e '/./{H;$!d} ; x ; s/\/\*!50003 TRIGGER ([^*]+)\*\//TRIGGER \1/g' | \
+    sed -E \
+        -e 's/^--.*//g' \
+        -e 's/\/\*!50017[^*]+\*\///g' \
+        -e 's/\/\*!50003 CREATE\*\//CREATE/g' \
+        -e 's/\/\*!50003 TRIGGER/TRIGGER/g' \
+        -e 's/^\/\*!.*//g' \
+        -e 's/END \*\//END /g' \
+        -e 's/^ALTER DATABASE.*//g' \
+        -e 's/^U?N?LOCK TABLE.*//g' \
+        -e 's/AUTO_INCREMENT=[0-9]+ //g' \
+        -e 's/^INSERT INTO.*//g' | \
+        sed -e '/^$/N;/^\n$/D'
+
+
