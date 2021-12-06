@@ -3,7 +3,7 @@
 The file `klinikDB.sql` in this directory is a recent schema of the
 klinicDB database.  It can be prepared from the running instance by:
 
-    mysqldump --no-tablespaces -h <host> -u <user> -p<password> klinikDB > tmp.sql`
+    mysqldump --no-tablespaces -h <host> -u <user> -p<password> klinikDB > tmp.sql
     ./mysqldump2sql tmp.sql > klinikDB.sql  # to remove the copious comments
 
 Documentation for the schema is in [`../doc/schema.md`](../doc/schema.md).

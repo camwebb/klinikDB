@@ -1,93 +1,107 @@
 # Database Schema
 
+This file documents the structure of the KlinikDB relational database.
 
-### Table `Users`
+The [SQL schema](../sql/klinikDB.sql)
+
+See this [ER diagram](img/schema.png).
+
+## General comments
+
+Limitation imposed by xataface: diagnoses, etc should link to visit 
+
+## Table-by-table details
 
 
-### Table `antenatal`
+### `Users`
+
+
+### `antenatal`
 
 The antenatal info
 
  * `G`: The number of gestations
  * `P`: The number of paritas ...
 
-### Table `crop`
+### `crop`
 
 
-### Table `diagnoses`
+### `diagnoses`
 
 
-### Table `doc`
+### `doc`
 
 
-### Table `drug`
+### `drug`
 
 
-### Table `drugDispense`
+### `drugDispense`
 
 
-### Table `drugGeneric`
+### `drugGeneric`
 
 
-### Table `drugManuf`
+### `drugManuf`
 
 
-### Table `drugPackage`
+### `drugPackage`
 
 
-### Table `drugStock`
+### `drugStock`
 
 
-### Table `drugSuppl`
+### `drugSuppl`
 
 
-### Table `dusun`
+### `dusun`
 
 
-### Table `fp`
+### `fp`
+
+**Family planning**. 
 
 
-### Table `general`
+### `general`
 
 
-### Table `icd10`
+### `icd10`
 
 
-### Table `monitoring`
+### `monitoring`
 
 
-### Table `patient`
+### `patient`
 
 
-### Table `period`
+### `period`
 
 
-### Table `planting`
+### `planting`
 
 
-### Table `plot`
+### `plot`
 
 
-### Table `species`
+### `species`
 
 
-### Table `speciesPerPlanting`
+### `speciesPerPlanting`
 
 
-### Table `training`
+### `training`
 
 
-### Table `trainingParticipant`
+### `trainingParticipant`
 
 
-### Table `vaxShot`
+### `vaxShot`
 
 
-### Table `village`
+### `village`
 
 
-### Table `visit`
+### `visit`
 
 
-### Table `visitType`
+### `visitType`
 
