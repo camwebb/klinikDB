@@ -14,5 +14,15 @@ A graphical representation of the schema can be prepared using [schemaspy](https
       -o schema/ -db klinikDBx -s klinikDBx -dp mariadb-java-client.jar
     mv schema/diagrams/summary/relationships.real.compact.png ../doc/img/schema.png
 
+## Cleaning dataface views
+
+Add this to the end of the dump SQL:
+
+    select @str_sql := concat_ws('','drop view ',group_concat(table_name),';') 
+      FROM information_schema.tables WHERE table_schema = 'klinikDB' 
+      AND table_name LIKE 'dataface__view%' ;
+    PREPARE stmt from @str_sql;
+    EXECUTE stmt;
+    DROP PREPARE stmt;
 
 

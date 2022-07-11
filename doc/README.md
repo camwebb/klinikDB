@@ -23,3 +23,17 @@
  * rpi_usage.md  
  * usage.md
 
+----
+
+To add:
+
+ * Reason for not centering on visit (history at ASRI)
+ * history of DB evolution
+ * comparison with ASRI and BBDB: matrix with tables as rows and 3 cols
+ * `diff` of schemas for ASRI and BBDB.
+ * Run schemaspy on ASRI and BBDB.
+ * Explain the pharmacy... too complex, but... needed.
+ * Data cleaning (explain, not enough checks of e.g. dates, and too
+   much permission for users to create duplicate records)
+   
+   

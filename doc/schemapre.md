@@ -12,3 +12,10 @@ Limitation imposed by xataface: diagnoses, etc should link to visit
 
 ## Table-by-table details
 
+Not discussed:
+
+ * `id` column
+ * `xxxxID` columns (see ER diagram and schema) 
+ * data types: see schema
+ 
+ 

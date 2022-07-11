@@ -60,6 +60,7 @@ class conf_ApplicationDelegate {
                 unset($app->_conf['_tables']['visit']);
                 unset($app->_conf['_tables']['visitType']);
                 unset($app->_conf['_tables']['diagnoses']);
+                unset($app->_conf['_tables']['tests']);
                 unset($app->_conf['_tables']['doc']);
                 unset($app->_conf['_tables']['icd10']);
                 unset($app->_conf['_tables']['dusun']);
@@ -89,6 +90,7 @@ class conf_ApplicationDelegate {
                 $app->_conf['_disallowed_tables']['hide14'] = 'period';
                 $app->_conf['_disallowed_tables']['hide15'] = 'monitoring';
                 $app->_conf['_disallowed_tables']['hide16'] = 'planting';
+                $app->_conf['_disallowed_tables']['hide16'] = 'tests';
 
                 // Note: the following does not prevent access to
                 //  related_records. Some table-level delegate class permission
@@ -104,6 +106,7 @@ class conf_ApplicationDelegate {
                 unset($app->_conf['_tables']['visit']);
                 unset($app->_conf['_tables']['visitType']);
                 unset($app->_conf['_tables']['diagnoses']);
+                unset($app->_conf['_tables']['tests']);
                 unset($app->_conf['_tables']['doc']);
                 unset($app->_conf['_tables']['drug']);
                 unset($app->_conf['_tables']['drugPackage']);
@@ -122,6 +125,7 @@ class conf_ApplicationDelegate {
                 $app->_conf['_disallowed_tables']['hide9'] = 'icd10';
                 $app->_conf['_disallowed_tables']['hide10'] = 'Users';
                 $app->_conf['_disallowed_tables']['hide11'] = 'drugDispense';
+                $app->_conf['_disallowed_tables']['hide11'] = 'tests';
             }
             // Else, for ADMIN, see all
         }
