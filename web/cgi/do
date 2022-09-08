@@ -698,14 +698,14 @@ function network(     err, ip, online) {
 
   if (online) {
     if (system("sudo -u alarm ssh -fN -R 20000:127.0.0.1:22 "   \
-               "bbbr_remote@phylodiversity.net"))
+               "bbbr_remote@camwebb.info"))
       err = "ssh"
   }
   else
     err = "IP"
 
   while (("ps auwx | grep ssh" | getline) > 0) {
-    if ($0 ~ /phylodiversity/)
+    if ($0 ~ /camwebb/)
       ps = $2
   }
   close("ps auwx | grep ssh")
