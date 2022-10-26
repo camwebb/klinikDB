@@ -370,11 +370,13 @@ function backup(     err, time, file) {
   file = "../backup/" time "_manombo.sql"
   htmlHeader("Backup status")
   system("rm -f ../backup/*.gz.asc")
-  
+
+  # may need  --single-transaction
   if (system("mysqldump -u " USER " -p" PASS " -h " HOST " " DB " > " file))
     err = "mysqldump"
   if (system("gzip " file))
     err = err " gzip"
+  # debug with -vv
   if (system("gpg -e -a --trust-model always -r cw@camwebb.info -r gpg@healthinharmony.org --homedir ../../gnupg --no-permission-warning " file ".gz"))
     err = err " gpg"
   if (system("rm -f " file ".gz"))
